@@ -119,5 +119,25 @@ CI/CD 관련 이론을 위한 공간입니다. (쿠버네티스, 도커, 젠킨�
 
 	- 코드로 인프라를 소프트웨어처럼 다룸
 
+- 버추얼 박스
+
+	- 가상화 소프트웨어
+
+	- 다운로드 링크 : https://www.virtualbox.org/wiki/Download_Old_Builds_6_1 (6.1.12버전)
+
+	- 모두 기본상태로 next 클릭 후 설치 완료
+
+- 베이그런트
+
+	- 프로비저닝(provisioning) 기능 수행
+	
+		- 사용자의 요구에 맞게 시스템 자원을 할당, 배치, 배포
+
+		- 필요할 때 시스템을 사용할 수 있는 상태로 변경
+
+	- 다운로드 링크 : https://www.vagrantup.com/downloads (2.2.9버전)
+
+	- 모두 기본상태로 next 클릭 후 설치 완료
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
