@@ -185,5 +185,30 @@ vagrant up
 config.vm.box = "sysnet4admin/CentOS-k8s"
 ```
 
+7. 명령 프롬프트에서 vagrant up 실행하여 가상 머신 이미지 내려받는지 확인   
+   (Vagrant was unable to mount VirtualBox shared folders 에러 무시, 게스트 에디션이 설치되지 않아 발생)
+   
+8. 버추얼 박스를 실행하여 가상 머신 제대로 생성되었는지 확인
+
+```
+cd c:\HashiCorp
+vagrant ssh
+[vagrant@k8s ~]$
+```
+
+9. CentOS의 실행 시간(uptime)과 운영 체제의 종류(cat/etc/redhat-release)를 확인
+
+``
+[vagrant@k8s ~]$ uptime
+[vagrant@k8s ~]$ cat/etc/redhat-release
+``
+
+10. 설치 테스트 완료 후 가상 머신 삭제
+
+``
+[vagrant@k8s ~]$ exit
+vagrant destroy -f
+``
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
