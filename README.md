@@ -240,5 +240,20 @@ Vagrant.configure("2") do |config| //"2"는 API 버전, do |config|는 베어크
 end
 ```
 
+- ssh 서비스의 기본 포트 번호인 22번을 id: "ssh"로 설정하지 않으면 중복된 두개의 포트로 설정
+
+- 자기 자신(127.0.0.1/localhost)의 2222번 포트로 오는 내용과 모든 IP(0.0.0.0)의 60010 포트에서 오는 내용을 게스트의 22번으로 포워딩
+
+```
+vagrant port
+	22(guest) => 2222(host)
+	22(guest) => 60010(host)
+
+netstat -an | findstr 2222
+netstat -an | findstr 60010
+```
+
+- 명시적으로 좋지 않고 설정의 낭비를 줄이기 위해 왠만하면 id: "ssh"를 사용하는 것이 나음
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
