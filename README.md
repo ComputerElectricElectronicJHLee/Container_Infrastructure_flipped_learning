@@ -395,6 +395,8 @@ netstat -an | findstr 60010
 
 #### <컨테이너 인프라 환경>
 
+<img src="https://user-images.githubusercontent.com/101415950/197549006-3059f673-f0a2-40b0-8f5b-2f48abeda60f.png" width="80%" height="80%">
+
 - 리눅스 운영 체제의 커널 하나에서 여러 개의 컨테이너가 격리된 상태로 실행되는 인프라 환경
 
 - 컨테이너는 하나 이상의 목적을 위해 독립적으로 작동하는 프로세스
@@ -407,9 +409,11 @@ netstat -an | findstr 60010
 
 - 가상화 환경에서 각각의 가상 머신이 모두 독립적인 운영체제 커널을 가지고 있어야 하므로 자원을 더 소모하고 성능이 떨어짐
 
-- 컨테이너 인프라 환경은 커널 하나에 컨테이너 여러 개가 격리된 형태로 실행되므로 자원을 효율적으로 사용하고 수행해야 하는 단계도 적어 속도 빠름
+- 컨테이너 인프라 환경은 커널 하나에 컨테이너 여러 개가 격리된 형태로 실행되므로 자원을 효율적으로 사용하고   
+  수행해야 하는 단계도 적어 속도 빠름
 
-<img src="https://user-images.githubusercontent.com/101415950/197549006-3059f673-f0a2-40b0-8f5b-2f48abeda60f.png" width="80%" height="80%">
+<img src="https://user-images.githubusercontent.com/101415950/197551097-8453aef9-7e14-4b5f-b152-398cd538e5d7.png" width="80%" height="80%">
+(출처 : https://www.alibabacloud.com/ko/knowledge/difference-between-container-and-virtual-machine)
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
