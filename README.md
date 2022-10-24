@@ -224,7 +224,7 @@ Vagrant.configure("2") do |config|		 	#"2"는 API 버전, do |config|는 베이�
 end
 ```
 
-[config 예시 코드]
+[config.sh 예시 코드]
 ```
 #!/usr/bin/env bash
 
@@ -272,6 +272,50 @@ nameserver 1.1.1.1 #cloudflare DNS
 nameserver 8.8.8.8 #Google DNS
 EOF
 ```
+
+[install_pkg.sh 예시 코드]
+
+```
+#!/usr/bin/env bash
+
+# install packages 
+yum install epel-release -y
+yum install vim-enhanced -y
+yum install git -y					#깃허브에서 코드를 내려받을 수 있게 Git을 설치
+
+# install docker 
+yum install docker -y && systemctl enable --now docker	#쿠버네티스를 관리하는 컨테이너를 설치하기 위해 도커를 설치하고 구동
+
+# install kubernetes cluster 
+yum install kubectl-$1 kubelet-$1 kubeadm-$1 -y		#넘겨받은 버전의 kubectl, kubelet, kubeadm 설치
+systemctl enable --now kubelet				#kubelet 시작
+
+# git clone _Book_k8sInfra.git 
+if [ $2 = 'Main' ]; then				#전체 실행 코드를 마스터 노드에만 내려받도록 설정($2는 두번 째로 넘겨받은 값)
+  git clone https://github.com/sysnet4admin/_Book_k8sInfra.git	#Git에서 코드를 내려받음
+  mv /home/vagrant/_Book_k8sInfra $HOME			#내려받은 코드를 홈디렉터리(/root)로 옮김
+  find $HOME/_Book_k8sInfra/ -regex ".*\.\(sh\)" -exec chmod 700 {} \;	#배시 스크립트(.sh)를 find로 찾아 바로 실행가능한 상태가 되도록 chmod 700 설정
+fi
+```
+
+[master_node.sh 예시 코드]
+```
+#!/usr/bin/env bash
+
+# init kubernetes 					#kubeadm을 통해 쿠버네티스 worker node를 받아들일 준비를 함
+kubeadm init --token 123456.1234567890123456 --token-ttl 0 \	#토큰을 123456.1234567890123456로 지정하고 유지되는 시간(time to live)을 0으로 설정(기본 값인 24시간 후에 토큰이 계속 유지)
+--pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.1.10	#
+
+# config for master node only 
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+# config for kubernetes's network 
+kubectl apply -f \
+https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/172.16_net_calico.yaml
+```
+
 
 - ssh 서비스의 기본 포트 번호인 22번을 id: "ssh"로 설정하지 않으면 중복된 두개의 포트로 설정
 
