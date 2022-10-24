@@ -165,7 +165,7 @@ CI/CD 관련 이론을 위한 공간입니다. (쿠버네티스, 도커, 젠킨�
 
 Vagrantfile을 수정하여 원하는 구성이 자동으로 CentOS에 입력되도록 수행
 
-[예시 코드]
+[Vagrantfile 예시 코드]
 ```
 #do |이름|으로 시작한 작업은 end로 종료
 #Providier는 베이그런트를 통해 제공되는 코드가 실제로 가상 머신으로 배포되게 하는 소프트웨어
@@ -196,7 +196,7 @@ Vagrant.configure("2") do |config|		 	#"2"는 API 버전, do |config|는 베이�
       cfg.vm.synced_folder "../data", "/vagrant", disabled: true	#호스트(PC)와 게스트(가상 머신) 사이에 디렉터리 동기화가 이루어지지 않게 disabled:true 설정
       cfg.vm.provision "shell", path: "config.sh", args: N	#vm.provision "shell" 구문으로 경로에 있는 파일("config.sh")을 게스트(CentOS) 내부에서 호출하여 실행
       cfg.vm.provision "shell", path: "install_pkg.sh", args: [ Ver, "Main" ]	#변수 Ver, 문자 "Main"을 install_pkg.sh로 넘김
-      cfg.vm.provision "shell", path: "master_node.sh"	#쿠버네티스 마스터 노드를 위한 "master_node.sh" 코드 추가
+      cfg.vm.provision "shell", path: "master_node.sh"	#쿠버네티스 Master Node를 위한 "master_node.sh" 코드 추가
     end
 
   #==============#
@@ -218,10 +218,56 @@ Vagrant.configure("2") do |config|		 	#"2"는 API 버전, do |config|는 베이�
       cfg.vm.synced_folder "../data", "/vagrant", disabled: true
       cfg.vm.provision "shell", path: "config.sh", args: N
       cfg.vm.provision "shell", path: "install_pkg.sh", args: Ver
-      cfg.vm.provision "shell", path: "work_nodes.sh"
+      cfg.vm.provision "shell", path: "work_nodes.sh"	#쿠버네티스 Worker Node를 위한 "work_node.sh" 코드 추가
     end
   end
 end
+```
+
+[config 예시 코드]
+```
+#!/usr/bin/env bash
+
+# vim configuration 
+echo 'alias vi=vim' >> /etc/profile
+
+# swapoff -a to disable swapping
+swapoff -a
+# sed to comment the swap partition in /etc/fstab
+sed -i.bak -r 's/(.+ swap .+)/#\1/' /etc/fstab
+
+# kubernetes repo
+gg_pkg="packages.cloud.google.com/yum/doc" # Due to shorten addr for key
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+gpgkey=https://${gg_pkg}/yum-key.gpg https://${gg_pkg}/rpm-package-key.gpg
+EOF
+
+# Set SELinux in permissive mode (effectively disabling it)
+setenforce 0
+sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+# RHEL/CentOS 7 have reported traffic issues being routed incorrectly due to iptables bypassed
+cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+modprobe br_netfilter
+
+# local small dns & vagrant cannot parse and delivery shell code.
+echo "192.168.1.10 m-k8s" >> /etc/hosts
+for (( i=1; i<=$1; i++  )); do echo "192.168.1.10$i w$i-k8s" >> /etc/hosts; done
+
+# config DNS  
+cat <<EOF > /etc/resolv.conf
+nameserver 1.1.1.1 #cloudflare DNS
+nameserver 8.8.8.8 #Google DNS
+EOF
 ```
 
 - ssh 서비스의 기본 포트 번호인 22번을 id: "ssh"로 설정하지 않으면 중복된 두개의 포트로 설정
