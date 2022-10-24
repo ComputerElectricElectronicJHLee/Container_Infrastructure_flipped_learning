@@ -412,7 +412,7 @@ netstat -an | findstr 60010
 - 컨테이너 인프라 환경은 커널 하나에 컨테이너 여러 개가 격리된 형태로 실행되므로 자원을 효율적으로 사용하고   
   수행해야 하는 단계도 적어 속도 빠름
 
-<img src="https://user-images.githubusercontent.com/101415950/197551097-8453aef9-7e14-4b5f-b152-398cd538e5d7.png" width="80%" height="80%">
+<img src="https://user-images.githubusercontent.com/101415950/197551826-c1ad029c-920d-4d69-bc39-79f307d38411.png" width="80%" height="80%">
 (출처 : https://www.alibabacloud.com/ko/knowledge/difference-between-container-and-virtual-machine)
 
 ## 마크다운 언어 참조
