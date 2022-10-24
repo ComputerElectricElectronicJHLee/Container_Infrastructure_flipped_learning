@@ -451,5 +451,40 @@ netstat -an | findstr 60010
 
 	- kubespray는 실제 업무 환경에서도 매우 편리하게 쿠버네티스 클러스터를 자동으로 배포할 수 있는 도구
 
+#### <쿠버네티스(k8s) 구성 요소>
+
+- kubectl, kubelet, API 서버, 캘리코, etcd, 컨트롤러 매니저, 스케줄러, kube-proxy, 컨테이너 런타임, 파드 등
+
+- 쿠버네티스 구성 요소는 동시에 여러 개가 존재하는 경우 Hash 코드를 삽입하여 중복된 이름 회피(예시 : calico-node-bf486의 bf486)
+
+- 구성 요소의 이름을 직접 정할 수 있음
+
+- 구성 요소에 문제 발견 시 다시 생성되는 특성을 가지는 파드로 이루어져 있어서 자동으로 이름을 지정하는 것이 관리 수월
+
+- 아래 예시에서 coredns-5644d7b6d9-b4dz9의 5644d7b6d9은 레플리카셋(ReplicaSet)을 무작위 문자열로 변형하여 추가한 것
+
+```
+# --all-namespaces는 default(기본 namespaces) 외 모든 것을 표시
+# kubectl get pods는 파드를 수집하여 출력
+
+[root@m-k8s ~]#  kubectl get pods --all-namespaces
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-6bbf58546b-pmk78   1/1     Running   0          36m
+kube-system   calico-node-bf486                          1/1     Running   0          31m
+kube-system   calico-node-j9plc                          1/1     Running   0          22m
+kube-system   calico-node-mnkgd                          1/1     Running   0          27m
+kube-system   calico-node-xwxtc                          1/1     Running   0          36m
+kube-system   coredns-5644d7b6d9-b4dz9                   1/1     Running   0          36m
+kube-system   coredns-5644d7b6d9-jmsxh                   1/1     Running   0          36m
+kube-system   etcd-m-k8s                                 1/1     Running   0          35m
+kube-system   kube-apiserver-m-k8s                       1/1     Running   0          35m
+kube-system   kube-controller-manager-m-k8s              1/1     Running   0          35m
+kube-system   kube-proxy-5ltsx                           1/1     Running   0          22m
+kube-system   kube-proxy-fzvsx                           1/1     Running   0          36m
+kube-system   kube-proxy-gfsc8                           1/1     Running   0          31m
+kube-system   kube-proxy-v8lxz                           1/1     Running   0          27m
+kube-system   kube-scheduler-m-k8s                       1/1     Running   0          35m 
+```
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
