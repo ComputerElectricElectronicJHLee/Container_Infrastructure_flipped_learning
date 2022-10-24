@@ -415,13 +415,39 @@ netstat -an | findstr 60010
 <img src="https://user-images.githubusercontent.com/101415950/197551826-c1ad029c-920d-4d69-bc39-79f307d38411.png" width="80%" height="80%">
 (출처 : https://www.alibabacloud.com/ko/knowledge/difference-between-container-and-virtual-machine)
 
-#### <쿠버네티스 솔루션 및 구성 방법>
+#### <쿠버네티스(k8s) 정의>
 
 - 쿠버네티스는 컨테이너 오케스트레이션(Orchestration)을 위한 솔루션
 
 - 오케스트레이션은 복잡한 단계를 관리하고 요소들의 유기적인 관계를 미리 정의하여 손쉽게 사용하도록 서비스를 제공하는 것
 
 - 즉 다수의 컨테이너를 유기적으로 연결, 실행, 종료 그리고 상태 추적 및 보존 등 컨테이너를 안정적으로 사용할 수 있게 만들어주는 솔루션
+
+- 이와 비슷한 솔루션은 도커 스웜(소규모 환경에 유용), 메소스(분산 관리 시스템과 연동 필요), 노매드(Consul, Vault 연동)가 있음
+
+#### <쿠버네티스(k8s) 구성 방법>
+
+- 관리형 쿠버네티스
+	
+	- Public Cloud 업체에서 제공
+	
+	- EKS(Amazon Elastic Kubernetes Service), AKS(Azure Kubernetes Service), GKE(Google Kubernetes Engine)이 속함
+	
+	- 구성이 이미 다 갖춰져 있고 Master Node를 클라우드 업체에서 관리
+
+- 설치형 쿠버네티스
+
+	- Suse의 Rancher, RedHat의 Openshift와 같은 플랫폼에서 제공
+	
+	- 유료
+
+- 구성형 쿠버네티스
+
+	- 사용하는 시스템에 쿠버네티스 클러스터를 자동으로 구성해주는 솔루션
+	
+	- Kubeadm, kops(kubernetes Operations), KRIB(Kubernetes Rebar Integrated Bootstrap), kubespray가 있음
+	
+	- 온프레미스(On-premises)와 클라우드 지원하는 솔루션들도 있음
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
