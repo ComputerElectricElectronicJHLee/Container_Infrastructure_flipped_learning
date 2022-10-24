@@ -291,7 +291,7 @@ yum install kubectl-$1 kubelet-$1 kubeadm-$1 -y		#넘겨받은 버전의 kubectl
 systemctl enable --now kubelet				#kubelet 시작
 
 # git clone _Book_k8sInfra.git 
-if [ $2 = 'Main' ]; then				#전체 실행 코드를 마스터 노드에만 내려받도록 설정($2는 두번 째로 넘겨받은 값)
+if [ $2 = 'Main' ]; then				#전체 실행 코드를 Master Node에만 내려받도록 설정($2는 두번 째로 넘겨받은 값)
   git clone https://github.com/sysnet4admin/_Book_k8sInfra.git	#Git에서 코드를 내려받음
   mv /home/vagrant/_Book_k8sInfra $HOME			#내려받은 코드를 홈디렉터리(/root)로 옮김
   find $HOME/_Book_k8sInfra/ -regex ".*\.\(sh\)" -exec chmod 700 {} \;	#배시 스크립트(.sh)를 find로 찾아 바로 실행가능한 상태가 되도록 chmod 700 설정
@@ -304,18 +304,32 @@ fi
 
 # init kubernetes 					#kubeadm을 통해 쿠버네티스 worker node를 받아들일 준비를 함
 kubeadm init --token 123456.1234567890123456 --token-ttl 0 \	#토큰을 123456.1234567890123456로 지정하고 유지되는 시간(time to live)을 0으로 설정(기본 값인 24시간 후에 토큰이 계속 유지)
---pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.1.10	#
-
+--pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.1.10	#Worker Node가 정해진 토큰에 들어오게 함
+							#쿠버네티스가 자동으로 컨테이너에 부여하는 네트워크를 172.16.0.0/16(176.16.0.1 ~ 172.16.255.254)으로 제공
+							#Worker Node에 접속하는 API 서버의 IP를 192.168.1.10으로 지정(Worker Node들이 자동으로 API 서버에 연결)
 # config for master node only 
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
+mkdir -p $HOME/.kube					#Master Node에서 현재 사용자가 쿠버네티스를 정상적으로 구동할 수 있게 하는 구문
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config	#설정 파일을 루트의 홈디렉터리(/root)에 복사
+chown $(id -u):$(id -g) $HOME/.kube/config		#쿠버네티스를 이용할 사용자에게 권한 부여
 
 # config for kubernetes's network 
-kubectl apply -f \
+kubectl apply -f \					#CNI(컨테이너 네트워크 인터페이스)인 Calico의 설정을 적용해 쿠버네티스의 네트워크를 구성
 https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/172.16_net_calico.yaml
 ```
 
+[work_nodes.sh 예시 코드]
+```
+#kubeadm을 이용하여 Master Node에 접속
+#접속 시 연결에 필요한 토큰은 기존 Master Node에서 생성한 123456.1234567890123456 사용
+#간단히 구성하기 위해 --discovery-token-unsafe-skip-ca-verification으로 인증 무시
+#API 서버 주소인 192.168.1.10으로 기본 포트 번호인 6443 포트에 접속하도록 설정
+
+#!/usr/bin/env bash
+
+# config for work_nodes only 
+kubeadm join --token 123456.1234567890123456 \
+             --discovery-token-unsafe-skip-ca-verification 192.168.1.10:6443
+```
 
 - ssh 서비스의 기본 포트 번호인 22번을 id: "ssh"로 설정하지 않으면 중복된 두개의 포트로 설정
 
