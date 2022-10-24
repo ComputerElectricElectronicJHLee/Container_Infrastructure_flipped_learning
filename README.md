@@ -390,5 +390,14 @@ netstat -an | findstr 60010
 
 - 각 가상 머신은 베이그런트에서 NAT로 사용하는 eth0에 고유 포트 포워딩 규칙이 적용 ("forwarded_port", guest: 22, host: 60010)
 
+---
+### 3. 쿠버네티스
+
+#### <컨테이너 인프라 환경>
+
+- 리눅스 운영 체제의 커널 하나에서 여러 개의 컨테이너가 격리된 상태로 실행되는 인프라 환경
+
+<img src="https://user-images.githubusercontent.com/101415950/197548733-b2184994-33f6-42e9-97a3-1fb3ec30ffff.png" width="80%" height="80%">
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
