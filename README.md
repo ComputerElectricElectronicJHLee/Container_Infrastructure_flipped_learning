@@ -165,29 +165,62 @@ CI/CD 관련 이론을 위한 공간입니다. (쿠버네티스, 도커, 젠킨�
 
 Vagrantfile을 수정하여 원하는 구성이 자동으로 CentOS에 입력되도록 수행
 
-1. Vagrantfile을 아래와 같이 수정
-
+[예시 코드]
 ```
 #do |이름|으로 시작한 작업은 end로 종료
 #Providier는 베이그런트를 통해 제공되는 코드가 실제로 가상 머신으로 배포되게 하는 소프트웨어
 #auto_correct:true는 포트가 중복되면 포트가 자동으로 변경
 
-# -*- mode: ruby -*- #루비(ruby) 언어임을 인식하는 호환 코드
-# vi: set ft=ruby : #ft는 파일 종류(file type)의 약자
-Vagrant.configure("2") do |config| #"2"는 API 버전, do |config|는 베어크런드 설정의 시작
- config.vm.define "m-k8s" do |cfg| #가상머신을 "m-k8s"로 정의, do |cfg|를 추가해 원하는 설정으로 변경
- config.vm.box = "sysnet4admin/CentOS-k8s" #do |cfg|에서 적용한 내용을 받아 cfg.vm.box로 변경
-  cfg.vm.provider "virtualbox" do |vb| #Provider를 버추얼박스로 정의, 버추얼 박스에 필요한 설정을 정의하기 위해 do |vb| 추가
-   vb.name="m-k8s(github_SysNet4Admin)" #가상머신 이름
-   vb.cpus=2 #CPU 수
-   vb.memory=2048 #메모리 크기
-   vb.customize ["modifyvm",:id, "--groups","/k8s-SM(github_SysNet4Admin)"] #소속된 그룹 명시
+# -*- mode: ruby -*-				 	#루비(ruby) 언어임을 인식하는 호환 코드
+# vi: set ft=ruby :				 	#ft는 파일 종류(file type)의 약자
+
+Vagrant.configure("2") do |config|		 	#"2"는 API 버전, do |config|는 베이그런드 설정의 시작
+  N = 3 # max number of worker nodes			#쿠버네티스에서 작업을 수행할 worker node 수 설정(args: N을 통해 넘길 수 있음)
+  Ver = '1.18.4' # Kubernetes Version to install	#쿠버네키스 버전을 변수로 설정
+
+  #=============#
+  # Master Node #
+  #=============#
+
+    config.vm.define "m-k8s" do |cfg|			#가상머신을 "m-k8s"로 정의, do |cfg|를 추가해 원하는 설정으로 변경
+      cfg.vm.box = "sysnet4admin/CentOS-k8s"		#do |cfg|에서 적용한 내용을 받아 cfg.vm.box로 변경
+      cfg.vm.provider "virtualbox" do |vb|		#Provider를 버추얼박스로 정의, 버추얼 박스에 필요한 설정을 정의하기 위해 do |vb| 추가
+        vb.name = "m-k8s(github_SysNet4Admin)"		#가상머신 이름
+        vb.cpus = 2					#CPU 수
+        vb.memory = 3072				#메모리 크기
+        vb.customize ["modifyvm", :id, "--groups", "/k8s-SgMST-1.13.1(github_SysNet4Admin)"]	#소속된 그룹 명시
+      end						#들여쓰기 위치 정확하게
+      cfg.vm.host_name = "m-k8s"			#가상머신 자체 설정으로 호스트이름 설정
+      cfg.vm.network "private_network", ip: "192.168.1.10"	#호스트 전용 네트워크를 private_network로 설정, eth1 인터페이스를 Host-Only로 구성하고 IP 지정
+      cfg.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true, id: "ssh"	#ssh통신은 호스트 60010번을 게스트 22번으로 전달되도록 구성
+      cfg.vm.synced_folder "../data", "/vagrant", disabled: true	#호스트(PC)와 게스트(가상 머신) 사이에 디렉터리 동기화가 이루어지지 않게 disabled:true 설정
+      cfg.vm.provision "shell", path: "config.sh", args: N	#vm.provision "shell" 구문으로 경로에 있는 파일("config.sh")을 게스트(CentOS) 내부에서 호출하여 실행
+      cfg.vm.provision "shell", path: "install_pkg.sh", args: [ Ver, "Main" ]	#변수 Ver, 문자 "Main"을 install_pkg.sh로 넘김
+      cfg.vm.provision "shell", path: "master_node.sh"	#쿠버네티스 마스터 노드를 위한 "master_node.sh" 코드 추가
+    end
+
+  #==============#
+  # Worker Nodes #
+  #==============#
+
+  (1..N).each do |i|					#1에서 3까지 반복하는 반복문으로 (1..N).each로 이루어짐
+    config.vm.define "w#{i}-k8s" do |cfg|		#해당 값은 |i|를 통해 #{i}로 치환하여 사용
+      cfg.vm.box = "sysnet4admin/CentOS-k8s"
+      cfg.vm.provider "virtualbox" do |vb|
+        vb.name = "w#{i}-k8s(github_SysNet4Admin)"
+        vb.cpus = 1
+        vb.memory = 2560
+        vb.customize ["modifyvm", :id, "--groups", "/k8s-SgMST-1.13.1(github_SysNet4Admin)"]
+      end
+      cfg.vm.host_name = "w#{i}-k8s"
+      cfg.vm.network "private_network", ip: "192.168.1.10#{i}"
+      cfg.vm.network "forwarded_port", guest: 22, host: "6010#{i}", auto_correct: true, id: "ssh"
+      cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+      cfg.vm.provision "shell", path: "config.sh", args: N
+      cfg.vm.provision "shell", path: "install_pkg.sh", args: Ver
+      cfg.vm.provision "shell", path: "work_nodes.sh"
+    end
   end
-  cfg.vm.host_name="m-k8s" #가상머신 자체 설정으로 호스트이름 설정
-  cfg.vm.network "private_network",ip:"192.168.1.10" #호스트 전용 네트워크를 private_network로 설정, eth1 인터페이스를 Host-Only로 구성하고 IP 지정
-  cfg.vm.network "forwarded_port", guest:22, host:60010, auto_correct:true, id:"ssh" #ssh통신은 호스트 60010번을 게스트 22번으로 전달되도록 구성
-  cfg.vm.synced_folder "../data","/vagrant", disabled:true #호스트(PC)와 게스트(가상 머신) 사이에 디렉터리 동기화가 이루어지지 않게 disabled:true 설정
- end #들여쓰기 위치 정확하게
 end
 ```
 
