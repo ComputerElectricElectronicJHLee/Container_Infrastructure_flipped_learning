@@ -350,10 +350,45 @@ netstat -an | findstr 60010
 
 #### <호스트 전용 네트워크가 정상적으로 동작하지 않는 경우>
 
+- 최대 절전 모드나 여러 차례 가상 머신을 다시 시작하는 경우에 호스트 전용 네트워크가 정상적으로 동작하지 않을 수 있음
+
 - 버추얼박스에서 파일>호스트 네트워크 관리자 선택
 
 - 속성 클릭 후 DHCP 서버를 사용하지 않도록 체크를 해제, IPv4 주소에 198.168.1.1 입력
 
+#### <vi(visual editor)와 Vim(visual editor improved)>
+
+- vi는 유닉스 환경에서 사용되는 텍스트 편집기(editor)
+
+- vi와 Vim의 가장 큰 차이점은 Vim은 화살표로 커서가 이동하지만, vi는 H, J, K, L로 커서를 이동
+
+#### <PuTTY와 SuperPuTTY>
+
+- 명령 프롬프트(Command Prompt, cmd.exe)로 가상 머신에 접근할 수 있지만 가상머신마다 각각 명령어를 통해 접근해야 하므로 불편함
+
+- PuTTY는 터미널 접속 프로그램으로 가볍고 다양한 플러그인을 통해 여러 대의 가상 머신에 접근할 수 있음
+
+- 접속 정보를 저장하고 바로 불러와 실행할 수 있는 기능
+
+- 한 번에 한 대씩만 접근 가능
+
+- https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html 링크의 Alternative binary files 항목에서 다운로드
+
+- SuperPuTTY는 한 번에 여러 대의 가상 머신에 접근하여 분할된 창을 통해 관리
+
+- https://github.com/jimradford/superputty/releases 에서 다운로드
+
+- SuperPuTTY 사용 시 putty.exe 위치를 지정하여 사용
+
+#### <127.0.0.1로 접속하는 이유>
+
+- 192.168.1.0/24 영역대로 가상 머신의 IP를 설정하는 경우
+
+- 현업에서는 데이터 통신과 관리 네트워크를 분리해 사용하는 데 이와 비슷하게 관리 네트워크를 분리
+
+- 192.168.1.0/24에서 문제가 발생해도 접속하는 데 문제가 없음
+
+- 각 가상 머신은 베이그런트에서 NAT로 사용하는 eth0에 고유 포트 포워딩 규칙이 적용 ("forwarded_port", guest: 22, host: 60010)
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
