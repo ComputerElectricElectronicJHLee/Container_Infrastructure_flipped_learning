@@ -447,7 +447,9 @@ netstat -an | findstr 60010
 	
 	- Kubeadm, kops(kubernetes Operations), KRIB(Kubernetes Rebar Integrated Bootstrap), kubespray가 있음
 	
-	- 온프레미스(On-premises)와 클라우드 지원하는 솔루션들도 있음
+	- Kubeadm은 사용자가 변경하기 수월하고 온프레미스(On-premises)와 클라우드 모두 지원
+
+	- kubespray는 실제 업무 환경에서도 매우 편리하게 쿠버네티스 클러스터를 자동으로 배포할 수 있는 도구
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
