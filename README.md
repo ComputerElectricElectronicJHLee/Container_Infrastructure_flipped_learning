@@ -229,16 +229,16 @@ end
 #!/usr/bin/env bash
 
 # vim configuration 
-echo 'alias vi=vim' >> /etc/profile
+echo 'alias vi=vim' >> /etc/profile			#vi를 호출하면 vim을 호출(코드에  하이라이트를 넣어 코드를 쉽게 구분하기 위함)
 
 # swapoff -a to disable swapping
-swapoff -a
+swapoff -a						#스왑되지 않도록 설정(쿠버네티스 설치 요구 조건을 충족하기 위해)
 # sed to comment the swap partition in /etc/fstab
-sed -i.bak -r 's/(.+ swap .+)/#\1/' /etc/fstab
+sed -i.bak -r 's/(.+ swap .+)/#\1/' /etc/fstab		#시스템이 다시 시작되더라도 스왑되지 않도록 설정
 
 # kubernetes repo
-gg_pkg="packages.cloud.google.com/yum/doc" # Due to shorten addr for key
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+gg_pkg="packages.cloud.google.com/yum/doc" # Due to shorten addr for key #리포지터리를 설정하기 위한 경로를 변수로 처리(간략화)
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo 		#쿠버네티스를 내려받을 리포티터리 설정 시작
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -246,25 +246,28 @@ enabled=1
 gpgcheck=0
 repo_gpgcheck=0
 gpgkey=https://${gg_pkg}/yum-key.gpg https://${gg_pkg}/rpm-package-key.gpg
-EOF
+EOF							#쿠버네티스를 내려받을 리포티터리 설정 끝
 
 # Set SELinux in permissive mode (effectively disabling it)
-setenforce 0
+setenforce 0						#selinux가 제한적으로 사용되지 않도록 permissive 모드로 변경
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
 # RHEL/CentOS 7 have reported traffic issues being routed incorrectly due to iptables bypassed
-cat <<EOF >  /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
+cat <<EOF >  /etc/sysctl.d/k8s.conf			#브리지 네트워크를 통과하는 IPv4와 IPv6의 패킷을 iptables가 관리하게 설정
+net.bridge.bridge-nf-call-ip6tables = 1			#Pod(쿠버네티스에서 실행되는 객체의 최소 단위)의 통신을 iptables로 제어
+net.bridge.bridge-nf-call-iptables = 1			#필요에 따라 IPVS 같은 방식으로 구성
 EOF
-modprobe br_netfilter
+modprobe br_netfilter					#br_netfilter 커널 모듈을 사용하여 브리지로 네트워크를 구성
+							#IP 마스커레이드를 사용하여 내부 네트워크랑 외부 네트워크를 분리
+							#IP 마스커레이드는 커널에서 제공하는 NAT 기능을 의미
+							#br_netfilter 적용함으로써 iptables이 활성화
 
 # local small dns & vagrant cannot parse and delivery shell code.
-echo "192.168.1.10 m-k8s" >> /etc/hosts
-for (( i=1; i<=$1; i++  )); do echo "192.168.1.10$i w$i-k8s" >> /etc/hosts; done
-
+echo "192.168.1.10 m-k8s" >> /etc/hosts			#쿠버네티스 안에서 노드 간 통신을 이름으로 할 수 있게 하기 위한 구문
+for (( i=1; i<=$1; i++  )); do echo "192.168.1.10$i w$i-k8s" >> /etc/hosts; done	#각 노드의 호스트 이름과 IP를 /etc/hosts에 설정
+							#이때 Worker Node는 넘겨받은 N변수에 맞게 동적으로 생성됨
 # config DNS  
-cat <<EOF > /etc/resolv.conf
+cat <<EOF > /etc/resolv.conf				#외부와 통신할 수 있는 DNS 서버 지정
 nameserver 1.1.1.1 #cloudflare DNS
 nameserver 8.8.8.8 #Google DNS
 EOF
