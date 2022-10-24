@@ -157,58 +157,9 @@ CI/CD 관련 이론을 위한 공간입니다. (쿠버네티스, 도커, 젠킨�
 
 - 베이그런트 설치 디렉터리(c:\HashiCorp)에 프로비저닝을 위한 코드 작성 권장
 
-1. 명령 프롬프트에서 베이그런트 설치 디렉터리로 이동 후 베이그런트 초기화(프로비저닝을 위한 기초 파일 생성)
+- vagrant init으로 생성 후 바로 vagrant up 실행하면 Vagrantfile이 config.vm.box = "base"로 설정되어 있어 base이미지를 찾지 못하여 에러 발생
 
-```
-cd c:\HashiCorp
-vagrant init
-```
-
-2. 생성된 베이그런트 스크립트 파일(Vagrantfile)을 IDE 등을 통해 실행 후 config.vm.box = "base"라는 내용있는지 확인   
-   => 가상머신의 이미지를 의미, 기본값으로 base가 지정, 이를 변경하여 가상머신 지정
-
-3. 명령 프롬프트에서 vagrant up 실행하면 base이미지를 찾지 못하여 에러 발생
-
-```
-cd c:\HashiCorp
-vagrant up
-```
-
-4. https://app.vagrantup.com/boxes/search 에 접속하여 sysnet4admin을 입력   
-   (컨테이너 인프라 환경 구축을 위한 쿠버네티스/도커 저자의 파일)
-
-5. sysnet4admin/CentOS-k8s를 확인 (https://app.vagrantup.com/sysnet4admin/boxes/CentOS-k8s)
-
-6. Vagrantfile에서 config.vm.box = "base"를 config.vm.box = "sysnet4admin/CentOS-k8s"으로 변경 후 저장
-
-```
-config.vm.box = "sysnet4admin/CentOS-k8s"
-```
-
-7. 명령 프롬프트에서 vagrant up 실행하여 가상 머신 이미지 내려받는지 확인   
-   (Vagrant was unable to mount VirtualBox shared folders 에러 무시, 게스트 에디션이 설치되지 않아 발생)
-   
-8. 버추얼 박스를 실행하여 가상 머신 제대로 생성되었는지 확인
-
-```
-cd c:\HashiCorp
-vagrant ssh
-[vagrant@k8s ~]$
-```
-
-9. CentOS의 실행 시간(uptime)과 운영 체제의 종류(cat/etc/redhat-release)를 확인
-
-``
-[vagrant@k8s ~]$ uptime
-[vagrant@k8s ~]$ cat/etc/redhat-release
-``
-
-10. 설치 테스트 완료 후 가상 머신 삭제
-
-``
-[vagrant@k8s ~]$ exit
-vagrant destroy -f
-``
+- config.vm.box = "base"를 config.vm.box = "sysnet4admin/CentOS-k8s"으로 변경 후 저장하여 이미지 설정 필요
 
 #### <베어그런트로 테스트 환경 구축>
 
