@@ -608,5 +608,10 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 대부분 사용자는 파드가 어떤 Worker Node에 위치하는지 신경쓰지 않아도 됨
 
+#### <쿠버네티스(k8s) 구성 요소간 통신 : 파드 생명주기>
+
+<img src="https://user-images.githubusercontent.com/101415950/197666301-6be225cc-8d55-46d8-801e-29d05d6206e2.png" width="80%" height="80%">
+
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
