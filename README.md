@@ -608,7 +608,8 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 쿠버네티스 클러스터는 파드가 위치한 노드에 kube-proxy를 통해 파드가 통신할 수 있는 네트워크 설정
 	
-	- 실제 통신은 br_netfilter와 iptables로 관리
+	- 실제 통신은 br_netfilter와 iptables로 관리   
+	  (config.sh 파일에서 br_netfilter 커널 모듈을 적재하고 iptables를 거쳐 통신)
 
 - 2 : 파드(Pod)
 
