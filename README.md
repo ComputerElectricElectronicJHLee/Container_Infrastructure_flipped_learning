@@ -654,7 +654,7 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
  	
 	- 명령이 절차적으로 전달되는 방식이 시스템 성능을 높이는 데 효율적이기 때문
  
- - Master Node는 이미 생성된 파드들을 유기적으로 연결하므로 쿠버네티스 클러스터를 안정적으로 유지하기 위해 선언적인 시스템이 수월함
+ - Master Node는 이미 생성된 파드들을 유기적으로 연결하므로 쿠버네티스 클러스터를 안정적으로 유지하기 위해 선언적인 시스템이 편리
 
 <img src="https://user-images.githubusercontent.com/101415950/197680984-d017ee86-a748-4b9d-8371-579dc703b7b1.png" width="80%" height="80%">
 
