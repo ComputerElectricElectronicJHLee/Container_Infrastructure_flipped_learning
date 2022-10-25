@@ -522,5 +522,23 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 멀티 마스터 노드 형태
 
+- 3 : Controller Manager
+
+	- 쿠버네티스 클러스터의 Object 상태 관리
+	
+	- Worker Node에서 통신 불량인 경우 상태 체크 및 복구는 Controller Manager에 속한 Node Controller에서 이루어짐
+
+	- ReplicaSet Controller는 ReplicaSet에 요청받은 파드 갯수대로 파드 생성
+
+	- EndPoint Controller는 서비스와 파드를 연결하는 역할
+
+	-  Controller Manager에 소속된 다양한 상태 값을 관리하는 주체들이 각자의 역할 수행
+
+- 4 : Scheduler
+
+	- Node의 상태, 자원, 레이블, 요구 조건 등 고려하여 파드를 어떤 Worker Node에 생성할지 결정하고 할당하는 역할
+
+	- 파드를 조건에 맞는 Worker Node에 지정하고, 파드가 Worker Node에 할당된 일정을 관리하는 역할
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
