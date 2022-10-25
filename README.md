@@ -780,7 +780,16 @@ nginx-pod                    1/1     Running   0          87s
 
 #### <ReplicaSet으로 파드 수 관리>
 
+- 다수의 파드를 하나씩 생성한다면 비효율적이므로 쿠버네티스에서는 다수의 파드를 만드는 ReplicaSet 오브젝트를 제공
 
+- 파드 3개 생성하겠다고 ReplicaSet에 선언하면 Controller Manager와 Scheduler가 Worker Node에 파드 3개를 만들도록 선언 
+
+- ReplicaSet은 파드 수를 보장하는 기능만 제공
+
+- 그러므로 Rolling 업데이트 기능 등이 추가된 Deployment를 사용하여 파드 수를 관리하기를 권장
+
+- 아래 그림은 ReplicaSet으로 파드 수를 관리하는 과정
+<img src="https://user-images.githubusercontent.com/101415950/197747014-7e3c2f22-e486-4200-bca6-eedf34577057.png" width="60%" height="60%">
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
