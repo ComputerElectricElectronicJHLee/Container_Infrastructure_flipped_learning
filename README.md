@@ -556,7 +556,7 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 파드 내 다양한 종류의 컨테이너가 문제 없이 동작하게 하는 표준 인터페이스
 
-- 7. 파드(Pod)
+- 7 : 파드(Pod)
 
 	- 한 개 이상의 컨테이너로 단일 목적의 일을 수행하는 쿠버네티스 애플리케이션의 최소 단위
 
@@ -567,15 +567,24 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 	[컨테이너와 파드의 관계]   
 	<img src="https://user-images.githubusercontent.com/101415950/197660830-bb278a36-0e2e-41dd-8f80-cb7cb04b1915.png" width="30%" height="30%">
 
-- 11. 네트워크 플러그인
+- 11 : 네트워크 플러그인
 
 	- 쿠버네티스 클러스터의 통신을 위해 구성해야 하는 요소
 
 	- 일반적으로 CNI로 구성
 
+	- CNI는 클라우드 네이티브 컴퓨팅 재단의 프로젝트로 컨테이너의 네트워크 안정성과 확장성을 보장하기 위해 개발
+
+	- CNI에 사용할 네트워크 플로그인을 선택 시 구성 방식과 지원하는 기능, 성능이 각기 다르므로 사용 목적에 맞게 선택
+
 	- CNI는 캘리코(Calico), 플래널(Flannel), 실리움(Cilium), 큐브 라우터(Kube-router), 로마나(Romana), 위브넷(WeaveNet), Canal이 있음
 
-- 12. CoreDNS
+	- 캘리코(Calico)는 L3로 컨테이너 네트워크를 구성 / 플래널(Flannel)은 L2로 컨테이너 네트워크를 구성
+
+	- 네트워크 프로토콜인 BGP와 VXLAN의 지원, ACL(Access Control List) 지원, 보안 기능 제공 등을 살펴보고 
+	  필요한 조건을 가지고 있는 네트워크 플러그인을 선택할 수 있어서 설계 유연성이 높음
+
+- 12 : CoreDNS
 
 	- 클라우드 네이티브 컴퓨팅 재단에서 보증하는 프로젝트
 
