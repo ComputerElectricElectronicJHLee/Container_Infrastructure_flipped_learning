@@ -501,8 +501,12 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 	- 쿠버네티스 클러스터에 명령을 내리는 역할
 	
 	- 바로 실행되는 명령 형태인 binary로 배포되므로 Master Node에 있을 필요 없음
+	  (kubectl이 어디에 있더라도 API 서버의 접속 정보만 있으면 어느 곳에서든 쿠버네티스 클러스터에 명령 가능)
 	
 	- 통상적으로 API 서버와 주로 통신하므로 API 서버가 위치한 Master Node에 구성할 수 있음
+
+	- Worker Node에서 kubectl를 실행하기 위해 마스터 노드의 scp 명령으로 쿠버네티스 클러스터의 정보를 Worker Node로 받아와야 함
+	  (쿠버네티스 클러스터의 정보를 kubectl이 알게 하기 위해)
 
 - 1 : API 서버
 
