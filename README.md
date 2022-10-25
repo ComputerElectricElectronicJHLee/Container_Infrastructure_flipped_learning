@@ -490,6 +490,10 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 - 관리자 or 개발자가 파드 배포 명령을 수행했을 때 실행되는 순서는 하기 그림과 같음
 
+- 0 ~ 7번 : 기본 설정으로 배포된 쿠버네티스에서 이루어지는 통신 단계를 구분
+
+- 10번대 : 선택적으로 배포하는 것들로 순서와 상관이 없음
+
 <img src="https://user-images.githubusercontent.com/101415950/197653986-0e0c9c1f-f55d-4071-b344-d753e54be574.png" width="80%" height="80%">
 
 - 0 : kubectl
@@ -560,9 +564,26 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 파드는 가상 머신과 달리 언제라도 죽을 수 있는 존재로 가정하고 설계되었기 때문에 여러 대안으로 디자인됨
 
-[컨테이너와 파드의 관계]
-![image](https://user-images.githubusercontent.com/101415950/197660830-bb278a36-0e2e-41dd-8f80-cb7cb04b1915.png)
+	[컨테이너와 파드의 관계]   
+	<img src="https://user-images.githubusercontent.com/101415950/197660830-bb278a36-0e2e-41dd-8f80-cb7cb04b1915.png" width="30%" height="30%">
 
-	
+- 11. 네트워크 플러그인
+
+	- 쿠버네티스 클러스터의 통신을 위해 구성해야 하는 요소
+
+	- 일반적으로 CNI로 구성
+
+	- CNI는 캘리코(Calico), 플래널(Flannel), 실리움(Cilium), 큐브 라우터(Kube-router), 로마나(Romana), 위브넷(WeaveNet), Canal이 있음
+
+- 12. CoreDNS
+
+	- 클라우드 네이티브 컴퓨팅 재단에서 보증하는 프로젝트
+
+	- 빠르고 유연한 DNS 서버
+
+	- 쿠버네티스 클러스터에서 도메인 이름을 이용하여 통신하는 데 사용
+
+	- 실무에서 쿠버네티스 클러스터를 구성하여 사용할 때, IP보다 DNS Name을 편리하게 관리해 주는 CoreDNS를 사용하는 것이 일반적임
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
