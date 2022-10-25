@@ -681,7 +681,7 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 - curl ip주소 : ip주소의 웹 페이지 정보를 받아오는지 확인
 
 ```
-[root@m-k8s ~]# kubectl run nginx-pod --image=nginx		#--image=생성할 이미지 이름
+[root@m-k8s ~]# kubectl run nginx-pod --image=nginx		#--image=(생성할 이미지 이름 or 이미지 경로)
 pod/nginx-pod created						
 [root@m-k8s ~]# kubectl create deployment dpy-nginx --image=nginx
 deployment.apps/dpy-nginx created
@@ -777,6 +777,10 @@ nginx-pod                    1/1     Running   0          87s
 - 클라우드 서비스를 이용하고 있으면 기본 저장소 외 클라우드 서비스 업체에서 제공하는 저장소를 사용
 
 - ex) 구글의 GCR(Google Container Registry), 아마존의 ECR(Elastic Container Registry), 마이크로소프트의 ACR(Azure Container Registry)
+
+#### <ReplicaSet으로 파드 수 관리>
+
+
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
