@@ -610,8 +610,33 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 #### <쿠버네티스(k8s) 구성 요소간 통신 : 파드 생명주기>
 
+- 쿠버네티스의 가장 큰 장점은 쿠버네티스 구성 요소마다 하는 일이 명확하게 구분됨 => 마이크로서비스 아키텍처(MSA)와 연관
+
+- 각자의 역할을 충실하게 수행하면 클러스터 시스템이 안정적으로 운영됨
+
+- 역할이 나누어져 있어 문제 발생 시 어느 부분에서 문제가 발생했는지 디버깅하기 수월함
+
 <img src="https://user-images.githubusercontent.com/101415950/197666301-6be225cc-8d55-46d8-801e-29d05d6206e2.png" width="80%" height="80%">
 
+
+1. kubectl을 통해 API 서버에 파드 생성을 요청
+
+2. API 서버에 전달된 내용이 있으면 API 서버는 etcd에 전달된 내용을 모두 기록하여 클러스터 상태 값을 최신으로 유지   
+   => 각 요소가 상태를 업데이트할 때마다 모두 API 서버를 통해 etcd에 기록
+
+3. API 서버에 파드 생성이 요청된 것을 Controller Manager가 인식하면 Controller Manager는 파드를 생성 후 API 서버에 전달   
+   (아직 어떤 Worker Node에 파드를 적용할 지는 결정되지 않은 상태로 파드만 생성)
+
+4. API 서버에 파드가 생성되었다는 정보를 Scheduler가 인식   
+   Scheduler는 생성된 파드를 어떤 Worker Node에 적용할지 조건을 고려하여 결정 후 해당 Worker Node에 파드를 띄우도록 요청
+
+5. API 서버에 전달된 정보대로 지정한 Worker Node에 파드가 속해 있는지 Scheduler가 kubelet으로 확인
+
+6. kubelet에서 컨테이너 런타임으로 파드 생성을 요청
+
+7. 파드 생성
+
+9. 파드는 사용 가능한 상태가 됨
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
