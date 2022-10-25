@@ -761,7 +761,22 @@ nginx-pod                    1/1     Running   0          87s
 
 - 아래 그림은 Deployment 오브젝트 계층 구조를 나타냄
 
-<img src="https://user-images.githubusercontent.com/101415950/197727218-4d9c3a04-5fd0-481f-b6f2-e15abfb22876.png" width="30%" height="30%">
+<img src="https://user-images.githubusercontent.com/101415950/197727218-4d9c3a04-5fd0-481f-b6f2-e15abfb22876.png" width="40%" height="40%">
+
+- API 서버와 Controller Manager는 파드를 생성되는 것을 감시할 뿐만 아니라 Deployment와 같이 ReplicaSet을 포함하는 오브젝트 생성 감시
+
+- 아래 그림은 API 서버와 Controller Manager의 통신을 나타냄
+
+<img src="https://user-images.githubusercontent.com/101415950/197727795-eac86dd4-56e6-4e7d-860e-53175d77545d.png" width="40%" height="40%">
+
+
+#### <NGINX 이미지>
+
+- 컨테이너로 도커를 사용하므로 도커의 기본 저장소인 도커 허브에서 이미지를 가지고 옴 (https://hub.docker.com/_/nginx)
+
+- 클라우드 서비스를 이용하고 있으면 기본 저장소 외 클라우드 서비스 업체에서 제공하는 저장소를 사용
+
+- ex) 구글의 GCR(Google Container Registry), 아마존의 ECR(Elastic Container Registry), 마이크로소프트의 ACR(Azure Container Registry)
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
