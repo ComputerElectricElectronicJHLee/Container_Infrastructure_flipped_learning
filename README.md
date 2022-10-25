@@ -520,5 +520,7 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 	
 	- 분산 저장이 가능한 key-value 저장소이므로 복제하여 여러 곳에 저장해 두면 하나의 etcd에 장애가 발생해도 시스템 가용성 확보 가능
 
+	- 멀티 마스터 노드 형태
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
