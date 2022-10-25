@@ -636,7 +636,27 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 7. 파드 생성
 
-9. 파드는 사용 가능한 상태가 됨
+8. 파드는 사용 가능한 상태가 됨
+
+#### <쿠버네티스(k8s) 상태유지 방법>
+
+- 쿠버네티스는 작업을 순서대로 진행하는 Workflow 구조가 아닌 선언적인(declarative) 시스템 구조를 가짐
+
+- 각 요소가 추구하는 상태(desired status)를 선언하면 현재 상태(current status)와 비교 점검 후 추구하는 상태에 맞출려고 하는 구조
+
+- 추구하는 상태를 API 서버에 선언하면 다른 요소들이 API 서버에서 확인하여 현재 상태와 비교하고 그에 맞게 상태를 변경
+
+- API는 현재 상태 값을 가지고 있고 이것을 보존하므로 etcd가 필요, API서버와 etcd는 거의 한몸처럼 동작하도록 설계
+
+- Work Node는 Workflow 구조에 따라 설계됨   
+	
+	- 쿠버네티스가 kubelet과 컨테이너 런타임을 통해 파드를 생성하고 제거 구조이므로 선언적인 방식으로 구조화 하기에 어렵기 때문
+ 	
+	- 명령이 절차적으로 전달되는 방식이 시스템 성능을 높이는 데 효율적이기 때문
+ 
+ - Master Node는 이미 생성된 파드들을 유기적으로 연결하므로 쿠버네티스 클러스터를 안정적으로 유지하기 위해 선언적인 시스템이 수월함
+
+<img src="https://user-images.githubusercontent.com/101415950/197680984-d017ee86-a748-4b9d-8371-579dc703b7b1.png" width="80%" height="80%">
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
