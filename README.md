@@ -540,5 +540,29 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 파드를 조건에 맞는 Worker Node에 지정하고, 파드가 Worker Node에 할당된 일정을 관리하는 역할
 
+- 5 : kubelet
+
+	- 파드의 구성 내용(PodSpec)을 받아 컨테이너 런타임으로 전달
+
+	- 파드 내 컨테니어들이 정상적으로 동작하는지 모니터링
+
+- 6 : 컨테이너 런타임(CRI, Container Runtime Interface)
+
+	- 파드를 이루는 컨테이너의 실행을 담당
+
+	- 파드 내 다양한 종류의 컨테이너가 문제 없이 동작하게 하는 표준 인터페이스
+
+- 7. 파드(Pod)
+
+	- 한 개 이상의 컨테이너로 단일 목적의 일을 수행하는 쿠버네티스 애플리케이션의 최소 단위
+
+	- 웹 서버 역할을 할 수 있고 로그나 데이터를 분석하는 역할도 할 수 있음
+
+	- 파드는 가상 머신과 달리 언제라도 죽을 수 있는 존재로 가정하고 설계되었기 때문에 여러 대안으로 디자인됨
+
+[컨테이너와 파드의 관계]
+![image](https://user-images.githubusercontent.com/101415950/197660830-bb278a36-0e2e-41dd-8f80-cb7cb04b1915.png)
+
+	
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
