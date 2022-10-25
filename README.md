@@ -554,6 +554,10 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 	- 파드 내 컨테니어들이 정상적으로 동작하는지 모니터링
 
+	- 파드의 생성과 상태 관리 및 복구 등 담당
+
+	- kubelet에 문제 발생 시 파드가 정상적으로 관리되지 않음
+
 - 6 : 컨테이너 런타임(CRI, Container Runtime Interface)
 
 	- 파드를 이루는 컨테이너의 실행을 담당
