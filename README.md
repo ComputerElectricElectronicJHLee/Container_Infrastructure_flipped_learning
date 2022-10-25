@@ -748,8 +748,20 @@ nginx-pod                    1/1     Running   0          87s
 		
 		- 기존 인프라에서 로드밸런서, 게이트웨이와 비슷한 역할
 
-		<img src="https://user-images.githubusercontent.com/101415950/197724789-20739f8c-d7fd-4e6d-afa1-b76e2012d164.png" width="80%" height="80%">
-	
+	<img src="https://user-images.githubusercontent.com/101415950/197724789-20739f8c-d7fd-4e6d-afa1-b76e2012d164.png" width="80%" height="80%">
+
+#### <디플로이먼트(Deployment)>
+
+- 기본 오브젝트만으로 쿠버네티스 사용 가능, 그러나 한계가 있어 이를 극복하기 위해 기능을 조합하고 추가한 것이 Deployment
+
+- Deployment 이외에 데몬셋(DaemonSet), 컨피그맵(ConfigMap), 레플리카셋(ReplicaSet), PV(PersistentVolume), PVC(PersistentVolumeClaim),    
+  스테이트풀셋(StatefulSet) 등이 있으며 목적에 맞는 오브젝트들을 추가하여 사용
+
+- Deployment는 파드를 기반하며 ReplicaSet 오브젝트를 합친 형태
+
+- 아래 그림은 Deployment 오브젝트 계층 구조를 나타냄
+
+<img src="https://user-images.githubusercontent.com/101415950/197727218-4d9c3a04-5fd0-481f-b6f2-e15abfb22876.png" width="30%" height="30%">
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
