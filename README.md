@@ -791,5 +791,17 @@ nginx-pod                    1/1     Running   0          87s
 - 아래 그림은 ReplicaSet으로 파드 수를 관리하는 과정(총 3개의 파드 상태로 변경됨)
 <img src="https://user-images.githubusercontent.com/101415950/197747014-7e3c2f22-e486-4200-bca6-eedf34577057.png" width="60%" height="60%">
 
+[ReplicaSet : 파드로 생성된 nginx-pod]
+```
+[root@m-k8s ~]# kubectl scale pod nginx-pod --replicas=3
+Error from server (NotFound): the server could not find the requested resource
+```
+
+[ReplicaSet : Deployment로 생성된 dpy-nginx]
+```
+[root@m-k8s ~]# kubectl scale deployment dpy-nginx --replicas=3
+deployment.apps/dpy-nginx scaled
+```
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
