@@ -486,7 +486,7 @@ kube-system   kube-proxy-v8lxz                           1/1     Running   0    
 kube-system   kube-scheduler-m-k8s                       1/1     Running   0          35m 
 ```
 
-#### <쿠버네티스(k8s) 구성 요소간 통신>
+#### <쿠버네티스(k8s) 구성 요소간 통신 : 관리자나 개발자가 파드를 배포할 때>
 
 - 관리자 or 개발자가 파드 배포 명령을 수행했을 때 실행되는 순서는 하기 그림과 같음
 
@@ -593,6 +593,20 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 	- 쿠버네티스 클러스터에서 도메인 이름을 이용하여 통신하는 데 사용
 
 	- 실무에서 쿠버네티스 클러스터를 구성하여 사용할 때, IP보다 DNS Name을 편리하게 관리해 주는 CoreDNS를 사용하는 것이 일반적임
+
+#### <쿠버네티스(k8s) 구성 요소간 통신 : 사용자가 배포된 파드에 접속할 때>
+
+- 1 : kube-proxy
+
+	- 쿠버네티스 클러스터는 파드가 위치한 노드에 kube-proxy를 통해 파드가 통신할 수 있는 네트워크 설정
+	
+	- 실제 통신은 br_netfilter와 iptables로 관리
+
+- 2 : 파드(Pod)
+
+	- 이미 배포된 파드에 접속하고 필요한 내용을 전달받음
+
+	- 대부분 사용자는 파드가 어떤 Worker Node에 위치하는지 신경쓰지 않아도 됨
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
