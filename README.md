@@ -748,7 +748,7 @@ nginx-pod                    1/1     Running   0          87s
 		
 		- 기존 인프라에서 로드밸런서, 게이트웨이와 비슷한 역할
 
-	<img src="https://user-images.githubusercontent.com/101415950/197724789-20739f8c-d7fd-4e6d-afa1-b76e2012d164.png" width="40%" height="40%">
+		<img src="https://user-images.githubusercontent.com/101415950/197724789-20739f8c-d7fd-4e6d-afa1-b76e2012d164.png" width="80%" height="80%">
 	
 
 ## 마크다운 언어 참조
