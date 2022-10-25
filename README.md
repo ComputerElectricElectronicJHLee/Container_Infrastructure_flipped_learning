@@ -486,5 +486,39 @@ kube-system   kube-proxy-v8lxz                           1/1     Running   0    
 kube-system   kube-scheduler-m-k8s                       1/1     Running   0          35m 
 ```
 
+#### <쿠버네티스(k8s) 구성 요소간 통신>
+
+- 관리자 or 개발자가 파드 배포 명령을 수행했을 때 실행되는 순서는 하기 그림과 같음
+
+<img src="https://user-images.githubusercontent.com/101415950/197653986-0e0c9c1f-f55d-4071-b344-d753e54be574.png" width="80%" height="80%">
+
+- 0 : kubectl
+
+	- 쿠버네티스 클러스터에 명령을 내리는 역할
+	
+	- 바로 실행되는 명령 형태인 binary로 배포되므로 Master Node에 있을 필요 없음
+	
+	- 통상적으로 API 서버와 주로 통신하므로 API 서버가 위치한 Master Node에 구성할 수 있음
+
+- 1 : API 서버
+
+	- 쿠버네티스 클러스터의 중심 역할을 하는 통로
+	
+	- 상태 값을 저장하는 etcd 등 여러 요소들이 API 서버를 중심으로 두고 통신
+	
+	- 회사에서 모든 직원과 상황을 관리하고 목표를 설정하는 관리자 역할
+
+- 2 : etcd
+
+	- etc 디렉터리(리눅스의 구성 정보를 가지고 있는 디렉터리)와 distributed(퍼트리다)의 합성어
+
+	- 구성 요소들의 상태 값이 모두 저장되는 장소(etcd 외 다른 구성 요소는 상태 값을 관리하지 않음)
+	
+	- 회사의 관리자가 모든 보고 내용을 기록하는 노트
+	
+	- etcd의 정보만 백업되어있으면 긴급한 장애 상황에서도 쿠버네티스 클러스터 복구 가능
+	
+	- 분산 저장이 가능한 key-value 저장소이므로 복제하여 여러 곳에 저장해 두면 하나의 etcd에 장애가 발생해도 시스템 가용성 확보 가능
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
