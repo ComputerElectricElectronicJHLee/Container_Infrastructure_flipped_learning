@@ -667,5 +667,39 @@ kube-system   kube-scheduler-m-k8s                       1/1     Running   0    
 
 <img src="https://user-images.githubusercontent.com/101415950/197680984-d017ee86-a748-4b9d-8371-579dc703b7b1.png" width="80%" height="80%">
 
+
+#### <파드 생성 방법>
+
+- 쿠버네티스를 사용한다는 것 = 사용자에게 효과적으로 파드를 제공한다는 뜻
+
+- kubectl run 파드이름 : 파드생성
+
+- kubectl create deployment 파드이름 : 파드생성(파드이름을 제외한 나머지 부분 해시코드로 무작위 생성)
+
+- kubectl get pod : 파드 확인 (kubectl get pods -o wide : 파드에 대한 더 많은 정보 확인)
+
+- curl ip주소 : ip주소의 웹 페이지 정보를 받아오는지 확인
+
+```
+[root@m-k8s ~]# kubectl run nginx-pod --image=nginx		#--image=생성할 이미지 이름
+pod/nginx-pod created						
+[root@m-k8s ~]# kubectl create deployment dpy-nginx --image=nginx
+deployment.apps/dpy-nginx created
+```
+
+- run으로 파드 생성 시 단일 파드 1개만 생성 (초코파이 1개)
+
+- create deployment로 파드 생성 시 Deployment라는 관리 그룹 내 파드 생성 (초코파이 박스 내 초코파이 1개)
+
+```
+[root@m-k8s ~]# kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+dpy-nginx-7cd4d79cc9-xmv28  1/1     Running   0          50s
+nginx-pod                    1/1     Running   0          87s 
+```
+
+
+<img src="https://user-images.githubusercontent.com/101415950/197715292-485c95d7-c8d6-4eef-89cd-d00318723b7a.png" width="40%" height="40%">
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
