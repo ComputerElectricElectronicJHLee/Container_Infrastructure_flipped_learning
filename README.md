@@ -956,5 +956,40 @@ root@nginx-pod:/# command terminated with exit code 137
 
 ### <파드의 동작 보증 기능>
 
+- 쿠버네티스는 파즈 자체에 문제가 발생 시 파드를 자동 복구하여 파드가 항상 동작하도록 보장하는 기능 보유
+
+```
+#파드 확인
+[root@m-k8s ~]# kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+echo-hname-5d754d565-7bzfs   1/1     Running   0          9m44s
+echo-hname-5d754d565-8759n   1/1     Running   0          6m21s
+echo-hname-5d754d565-dbt29   1/1     Running   0          6m21s
+echo-hname-5d754d565-g7tl5   1/1     Running   0          9m44s
+echo-hname-5d754d565-jl2c6   1/1     Running   0          6m21s
+echo-hname-5d754d565-lksqr   1/1     Running   0          9m44s 
+nginx-pod                    1/1     Running   0          26m 
+
+#단일 파드 삭제
+[root@m-k8s ~]# kubectl delete pods nginx-pod
+pod "nginx-pod" deleted
+
+#Deployment에 속한 파드 삭제
+[root@m-k8s ~]# kubectl delete pods echo-hname-5d754d565-7bzfs
+pod "echo-hname-5d754d565-7bzfs" deleted
+
+#삭제 확인
+[root@m-k8s ~]# kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+echo-hname-5d754d565-8759n   1/1     Running   0          7m35s
+echo-hname-5d754d565-9zcnn   1/1     Running   0          38s
+echo-hname-5d754d565-dbt29   1/1     Running   0          7m35s
+echo-hname-5d754d565-g7tl5   1/1     Running   0          10m
+echo-hname-5d754d565-jl2c6   1/1     Running   0          7m35s
+echo-hname-5d754d565-lksqr   1/1     Running   0          10m
+
+# echo-hname-5d754d565-7bzfs 파드가 삭제되고 echo-hname-5d754d565-9zcnn 파드가 새로 생성됨
+```
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
