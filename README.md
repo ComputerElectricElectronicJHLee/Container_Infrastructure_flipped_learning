@@ -1017,14 +1017,14 @@ deployment.apps "echo-hname" deleted
 - 쿠버네티스에서 모든 Node에 균등하게 파드를 할당하고자 할때 문제가 생길 가능성이 있는 노드를 구별하기 위해 cordon 기능 사용
 
 ```
-# apply를 통해 파드 생성후 scale을 통해 파드 수 변경
+# apply를 통해 파드 생성후 scale을 통해 파드 수 변경(늘리기)
 
 [root@m-k8s ~]# kubectl apply -f ~/_Book_k8sInfra/ch3/3.2.8/echo-hname.yaml
 deployment.apps/echo-hname created
 [root@m-k8s ~]# kubectl scale deployment echo-hname --replicas=9
 deployment.apps/echo-hname scaled
 
-# 각 노드로 공평하게 배분되었는지 확인
+# 각 노드로 공평하게 배분되었는지 확인 => NODE열 참조(공평하게 분배됨)
 # -o=custom-columns : 사용자가 임의로 구성할 수 있는 열을 의미
 
 [root@m-k8s ~]# kubectl get pods \
@@ -1039,7 +1039,38 @@ echo-hname-5d754d565-qzs9v   172.16.221.136   Running   w1-k8s
 echo-hname-5d754d565-qzvkv   172.16.103.137   Running   w2-k8s
 echo-hname-5d754d565-rd9cf   172.16.221.135   Running   w1-k8s
 echo-hname-5d754d565-sz5nm   172.16.132.7     Running   w3-k8s
+
+# scale을 통해 파드 수 변경(줄이기) 후 각 노드로 공평하게 배분되었는지 확인 => NODE열 참조(공평하게 분배됨)
+
+[root@m-k8s ~]# kubectl scale deployment echo-hname --replicas=3
+deployment.apps/echo-hname scaled
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                         IP               STATUS    NODE
+echo-hname-5d754d565-9t9s8   172.16.221.134   Running   w1-k8s
+echo-hname-5d754d565-jdzrt   172.16.132.6     Running   w3-k8s
+echo-hname-5d754d565-qzvkv   172.16.103.137   Running   w2-k8s
+
+# w3-k8s 노드에 cordon 명령을 실행
+
+[root@m-k8s ~]# kubectl cordon w3-k8s
+node/w3-k8s cordoned
 ```
+
+[배포된 파드의 세부 값 확인하기]
+
+```
+# 배포된 파드 선택 후 -o yaml 옵션으로 배포된 파드의 내용을 pod.yaml에 저장
+# vi(vim이 alias돼 있음)로 pod.yaml의 내용 확인
+
+[root@m-k8s ~]# kubectl get pod echo-hname-5d754d565-69wgw -o yaml > pod.yaml
+[root@m-k8s ~]# vi pod.yaml
+```
+
+- 좌측은 줄번호, 오른쪽은 pods.yaml에서 확인할 수 있는 값으로 확인됨
+
+![image](https://user-images.githubusercontent.com/101415950/197932524-e3ce73d7-4503-4e6c-9794-cc16f568b052.png)
+
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
