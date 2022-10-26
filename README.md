@@ -1051,7 +1051,7 @@ echo-hname-5d754d565-9t9s8   172.16.221.134   Running   w1-k8s
 echo-hname-5d754d565-jdzrt   172.16.132.6     Running   w3-k8s
 echo-hname-5d754d565-qzvkv   172.16.103.137   Running   w2-k8s
 
-# w3-k8s 노드에 cordon 명령을 실행
+# w3-k8s 노드에 cordon 명령을 실행(해제는 uncordoned)
 
 [root@m-k8s ~]# kubectl cordon w3-k8s
 node/w3-k8s cordoned
@@ -1102,6 +1102,59 @@ echo-hname-5d754d565-zdp4d   172.16.221.139   Running   w1-k8s
 
 ![image](https://user-images.githubusercontent.com/101415950/197932524-e3ce73d7-4503-4e6c-9794-cc16f568b052.png)
 
+### <노드 유지보수>
+
+- 정기 또는 비정기적인 유지보수를 위해 Node를 Off 해야되는 상황이 있음 => drain 기능 사용
+
+- drain은 지정한 Node의 파드를 전부 다른 곳으로 이동시켜 해당 노드를 유지보수할 수 있게 하는 기능
+
+```
+# kubectl drain을 통해 유지보수할 Node를 파드가 없는 상태로 만듬
+# 해당 Node의 daemonset을 지울 수 없어서 명령을 수행할 수 없다고 함(daemonset은 각 Node에 1개만 존재하는 파드이므로 drain으로 삭제 불가능)
+# 즉 drain은 실제로 파드를 옮기는 것이 아닌 해당 Node에서 파드 삭제 후 다른 곳에 다시 생성
+
+[root@m-k8s ~]# kubectl drain w3-k8s
+node/w3-k8s cordoned
+error: unable to drain node "w3-k8s", aborting command...
+
+There are pending nodes to be drained:
+w3-k8s
+error: cannot delete DaemonSet-managed Pods (use --ignore-daemonsets to ignore): kube-system/calico-node-j9plc, kube-system/kube-proxy-5ltsx
+
+# ignore-daemonsets 옵션을 추가 => daemonset을 무시하고 진행
+
+[root@m-k8s ~]# kubectl drain w3-k8s --ignore-daemonsets
+node/w3-k8s already cordoned
+WARNING: ignoring DaemonSet-managed Pods: kube-system/calico-node-j9plc, kube-system/kube-proxy-5ltsx
+evicting pod " echo-hname-5d754d565-jdzrt"
+pod/ echo-hname-5d754d565-jdzrt
+node/w3-k8s evicted
+
+# 해당 Node에 파드가 없는지 확인 
+# 옮긴 Node에 파드가 새로 생성되어 파드 이름과 IP가 부여된 것도 확인
+
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                          IP              STATUS   NODE
+echo-hname-5d754d565-9t9s8    172.16.221.134  Running  w1-k8s
+echo-hname-5d754d565-67gbr   172.16.221.140 Running  w1-k8s
+echo-hname-5d754d565-qzvkv    172.16.103.137  Running  w2-k8s
+
+# 해당 Node의 상태는 cordon을 실행했을 때처럼 SchedulingDisabled 상태
+
+[root@m-k8s ~]# kubectl get nodes
+NAME   STATUS                     ROLES   AGE    VERSION
+m-k8s  Ready                      master  145m   v1.18.4
+w1-k8s Ready                      <none>  140m   v1.18.4
+w2-k8s Ready                      <none>  136m   v1.18.4
+w3-k8s Ready,SchedulingDisabled  <none>  131m   v1.18.4
+
+# 유지보수가 끝났다고 가정하고 uncordon 명령 실행
+[root@m-k8s ~]# kubectl uncordon w3-k8s
+node/w3-k8s uncordoned
+```
+
+### <파드 업데이트하고 복구하기>
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
