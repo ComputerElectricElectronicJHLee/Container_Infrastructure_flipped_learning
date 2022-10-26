@@ -828,7 +828,8 @@ nginx-pod                    1/1     Running   …   8m24s   172.16.103.132  w2-
 
 - kubectl api-versions : 사용 가능한 API 버전을 확인하는 명령어
 
-[Object Spec 파일 예시]
+[Object Spec 파일 예시 : Deployment]
+
 ```
 apiVersion: apps/v1 			# API 버전
 kind: Deployment			# 오브젝트 종류
@@ -851,7 +852,20 @@ spec:
         image: sysnet4admin/echo-hname 	# 사용되는 이미지
 ```
 
-[Object Spec 파일 구조]
+[Object Spec 파일 예시 : Pod]
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: container-name
+    image: nginx
+```
+
+[Object Spec 파일 구조 (좌측 : Deployment, 우측 : Pod)]
 
 <img src="https://user-images.githubusercontent.com/101415950/197912694-76c6d10f-4579-40dc-a206-9ac07e8e3c36.png" width="100%" height="100%">
 
