@@ -828,7 +828,7 @@ nginx-pod                    1/1     Running   …   8m24s   172.16.103.132  w2-
 
 - kubectl api-versions : 사용 가능한 API 버전을 확인하는 명령어
 
-[Object Spec 파일 예시 : Deployment]
+[Object Spec 파일 예시 : Deployment, echo-hname.yaml]
 
 ```
 apiVersion: apps/v1 			# API 버전
@@ -852,7 +852,7 @@ spec:
         image: sysnet4admin/echo-hname 	# 사용되는 이미지
 ```
 
-[Object Spec 파일 예시 : Pod]
+[Object Spec 파일 예시 : Pod, echo-hname.yaml]
 
 ```
 apiVersion: v1
@@ -868,6 +868,45 @@ spec:
 [Object Spec 파일 구조 (좌측 : Deployment, 우측 : Pod)]
 
 <img src="https://user-images.githubusercontent.com/101415950/197912694-76c6d10f-4579-40dc-a206-9ac07e8e3c36.png" width="100%" height="100%">
+
+- 쿠버네티스는 API 버전마다 포함되는 Object(Kind)와 요구사항이 다르므로 기존 파일을 수정하면서 정리하는 방식이 효율적임
+
+```
+#replicas의 값을 3에서 6으로 변경할 때 사용하는 명령어 : sed(streamlined editor)
+
+sed -i 's/replicas: 3/replicas: 6/' ~/_Book_k8sInfra/ch3/3.2.4/echo-hname.yaml
+
+# -i는 --in-place의 약어로 변경된 내용을 현재 파일에 바로 적용
+# s/는 주어진 패턴을 원하는 패턴으로 변경
+```
+
+
+#### <apply로 오브젝트 생성 및 관리>
+
+- Deployment를 생성하고 sed를 사용하여 replicas 변경 후 다시 생성했을 때 아래와 같은 오류 발생
+
+```
+[root@m-k8s ~]# kubectl create -f ~/_Book_k8sInfra/ch3/3.2.4/echo-hname.yaml
+Error from server (AlreadyExists): error when creating "echo-hname.yaml": deployments.apps "echo-hname" already exists
+```
+
+- 배포된 Object의 Spec을 변경하고 싶을 때 지우고 다시 생성하는 방법말고 다른 방법은 apply를 이용하는 방법
+
+- run은 단일 파드만 생성 가능하고 create deployment는 파일의 변경사항을 바로 적용할 수 없기 때문에 apply 명령어 사용
+
+```
+[root@m-k8s ~]# kubectl apply -f ~/_Book_k8sInfra/ch3/3.2.4/echo-hname.yaml
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+deployment.apps/echo-hname configured
+
+# 처음부터 apply로 생성된 것이 아니라서 경고 표시 => 동작에 문제는 없지만 일관성에서 문제 발생 농후함
+# 변경사항이 발생할 가능성이 있는 경우 처음부터 apply로 생성
+```
+
+[Run / Create / Apply 비교]
+
+![image](https://user-images.githubusercontent.com/101415950/197914675-ae84e421-ed4d-45a4-8bd3-77a3dc277fec.png)
+
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
