@@ -907,6 +907,34 @@ deployment.apps/echo-hname configured
 
 ![image](https://user-images.githubusercontent.com/101415950/197914675-ae84e421-ed4d-45a4-8bd3-77a3dc277fec.png)
 
+### <파드의 컨테이너 자동 복구 방법>
+
+- 쿠버네티스는 거의 모든 부분이 자동 복구되도록 설계, 이 자동 복구 기술을 Self-Healing이라고 명명함
+
+- 제대로 동작하지 않는 컨테이너를 다시 시작하거나 교체하여 파드가 정상적으로 동작되도록 함
+
+```
+[root@m-k8s ~]# kubectl exec -it nginx-pod -- /bin/bash
+root@nginx-pod:/#
+
+# exec : 실행
+# i옵선 : stdin(standard input, 표준 입력)
+# t옵션 : tty (teletypewriter, 명령줄 인터페이스)
+# it : 표준 입력을 명령줄 인터페이스로 작성
+# --는 exec에 대한 인자 값을 나누고 싶을 때 사용(즉 명령어 구분할 때 사용)
+# 즉 nginx-pod 파드에 /bin/bash를 실행하여 nginx-pod 컨테이너에서 bash셸 접속
+```
+
+```
+[root@m-k8s ~]# kubectl exec -it nginx-pod -- ls -l /run
+total 4
+drwxrwxrwt. 2 root root  6 Aug  3 07:00 lock
+-rw-r--r--. 1 root root  2 Aug 12 02:06 nginx.pid
+drwxr-xr-x. 4 root root 39 Aug 12 02:06 secrets
+
+# ls 요소: 파드에서 요소의 내용을 확인(예제의 /run 내용 확인)
+# -l(long listing format) : 권한 확인(예제의 /run 권한 확인)
+```
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
