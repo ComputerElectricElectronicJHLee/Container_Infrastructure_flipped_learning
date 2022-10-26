@@ -991,5 +991,15 @@ echo-hname-5d754d565-lksqr   1/1     Running   0          10m
 # echo-hname-5d754d565-7bzfs 파드가 삭제되고 echo-hname-5d754d565-9zcnn 파드가 새로 생성됨
 ```
 
+- 단일 파드는 Deployment에 속한 파드가 아니며 어떤 Controller도 이 파드를 관리하지 않으므로 바로 삭제 가능
+
+![image](https://user-images.githubusercontent.com/101415950/197918961-a43a2a88-1033-45a2-bcef-e993c10d793c.png)
+
+- Deployment에 속한 파드는 이전에 replicas에서 n개로 선언하여 파드의 수를 항상 확인하며 부족하면 새로운 파드를 생성
+
+![image](https://user-images.githubusercontent.com/101415950/197919004-3ec45c34-a8b0-4cf6-865e-75999497f328.png)
+
+
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
