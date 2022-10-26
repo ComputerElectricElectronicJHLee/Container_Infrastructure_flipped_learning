@@ -819,5 +819,42 @@ nginx-pod                    1/1     Running   …   8m24s   172.16.103.132  w2-
 
 #### <Spec 지정하여 오브젝트 생성>
 
+- create 명령어는 replicas 옵션 사용불가, scale은 이미 만들어진 Deployment에만 사용 가능하므로 한번에 여러 개의 파드를 만들 수 없음
+
+- 한번에 여러 개의 파드를 만들기 위해 오브젝트 스펙(object spec) 파일을 작성 필요
+
+- object spec은 보통 YAML 문법으로 작성   
+  (최근 상용 및 오픈 소스 기술들은 Spec과 상태값을 주로 YAML로 작성, YAML은 데이터의 내용을 쉽게 파악할 수 있는 표준)
+
+- kubectl api-versions : 사용 가능한 API 버전을 확인하는 명령어
+
+[Object Spec 파일 예시]
+```
+apiVersion: apps/v1 			# API 버전
+kind: Deployment			# 오브젝트 종류
+metadata:
+  name: echo-hname
+  labels:
+    app: nginx
+spec:
+  replicas: 3 				# 몇 개의 파드를 생성할지 결정
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: echo-hname
+        image: sysnet4admin/echo-hname 	# 사용되는 이미지
+```
+
+[Object Spec 파일 구조]
+
+<img src="https://user-images.githubusercontent.com/101415950/197911895-bacd2a2d-6546-483e-bb9d-3ab7e97303ca.png" width="80%" height="80%">
+
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
