@@ -997,7 +997,18 @@ echo-hname-5d754d565-lksqr   1/1     Running   0          10m
 
 - Deployment에 속한 파드는 이전에 replicas에서 n개로 선언하여 파드의 수를 항상 확인하며 부족하면 새로운 파드를 생성
 
+- 즉 Deployment로 생성하는 것이 파드의 동작을 보장하기 위한 조건!
+
 ![image](https://user-images.githubusercontent.com/101415950/197919004-3ec45c34-a8b0-4cf6-865e-75999497f328.png)
+
+```
+# Deployment에 속한 파드는 상위 Deployment를 삭제해야 삭제됨
+
+[root@m-k8s ~]# kubectl delete deployment echo-hname
+deployment.apps "echo-hname" deleted
+```
+
+### <노드 자원 보호하기>
 
 
 
