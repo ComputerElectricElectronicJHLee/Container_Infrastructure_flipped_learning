@@ -1055,7 +1055,38 @@ echo-hname-5d754d565-qzvkv   172.16.103.137   Running   w2-k8s
 
 [root@m-k8s ~]# kubectl cordon w3-k8s
 node/w3-k8s cordoned
+
+# cordon 명령 적용 확인
+# cordon 명령 시 스케줄되지 않는 상태(SchedulingDisabled)로 표시
+
+[root@m-k8s ~]# kubectl get nodes
+NAME     STATUS                     ROLES    AGE    VERSION
+m-k8s    Ready                      master   131m   v1.18.4
+w1-k8s   Ready                      <none>   127m   v1.18.4
+w2-k8s   Ready                      <none>   122m   v1.18.4
+w3-k8s   Ready,SchedulingDisabled  <none>   117m   v1.18.4 
+
+#scale을 통해 파드 수 변경(늘리기)
+
+[root@m-k8s ~]# kubectl scale deployment echo-hname --replicas=9
+deployment.apps/echo-hname scaled
+
+# cordon 명령 적용한 부분을 제외하고 적용됨
+
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                         IP               STATUS    NODE
+echo-hname-5d754d565-9t9s8   172.16.221.134   Running   w1-k8s
+echo-hname-5d754d565-cg5w6   172.16.103.140   Running   w2-k8s
+echo-hname-5d754d565-f947n   172.16.221.137   Running   w1-k8s
+echo-hname-5d754d565-fr5v6   172.16.103.141   Running   w2-k8s
+echo-hname-5d754d565-jdzrt   172.16.132.6     Running   w3-k8s
+echo-hname-5d754d565-mb9z5   172.16.103.142   Running   w2-k8s
+echo-hname-5d754d565-mcm97   172.16.221.138   Running   w1-k8s
+echo-hname-5d754d565-qzvkv   172.16.103.137   Running   w2-k8s
+echo-hname-5d754d565-zdp4d   172.16.221.139   Running   w1-k8s
 ```
+![image](https://user-images.githubusercontent.com/101415950/197936708-2d420a91-3b93-4adc-9d40-5bdc5542fccf.png)
 
 [배포된 파드의 세부 값 확인하기]
 
