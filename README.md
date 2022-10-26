@@ -1303,5 +1303,21 @@ REVISION  CHANGE-CAUSE
 
 ![image](https://user-images.githubusercontent.com/101415950/197941594-06abb904-445f-454b-ba76-ccb9682f7fd9.png)
 
+### <특정 시점으로 파드 복구>
+
+- --to-revision 옵션을 통해 바로 전 상태가 아닌 특정 시점으로 복구
+
+```
+### revision 1로 돌아가기
+
+[root@m-k8s ~]# kubectl rollout undo deployment rollout-nginx --to-revision=1
+deployment.apps/rollout-nginx rolled back
+
+### curl -I로 nginx 컨테이너의 버전 확인
+
+[root@m-k8s ~]# curl -I --silent 172.16.103.150 | grep Server
+Server: nginx/1.15.12
+```
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
