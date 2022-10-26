@@ -853,8 +853,7 @@ spec:
 
 [Object Spec 파일 구조]
 
-<img src="https://user-images.githubusercontent.com/101415950/197911895-bacd2a2d-6546-483e-bb9d-3ab7e97303ca.png" width="80%" height="80%">
-
+<img src="https://user-images.githubusercontent.com/101415950/197912694-76c6d10f-4579-40dc-a206-9ac07e8e3c36.png" width="100%" height="100%">
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
