@@ -1008,9 +1008,38 @@ echo-hname-5d754d565-lksqr   1/1     Running   0          10m
 deployment.apps "echo-hname" deleted
 ```
 
-### <노드 자원 보호하기>
+### <Node 자원 보호>
 
+- Node는 쿠버네티스 Scheduler에서 파드를 할당받고 처리하는 역할
 
+- 몇 차례 문제가 생긴 Node에 파드를 할당하면 문제가 생길 수 있지만 사용해야 하면 영향도 적은 파드를 할당하여 일정기간 모니터링 필요
+
+- 쿠버네티스에서 모든 Node에 균등하게 파드를 할당하고자 할때 문제가 생길 가능성이 있는 노드를 구별하기 위해 cordon 기능 사용
+
+```
+# apply를 통해 파드 생성후 scale을 통해 파드 수 변경
+
+[root@m-k8s ~]# kubectl apply -f ~/_Book_k8sInfra/ch3/3.2.8/echo-hname.yaml
+deployment.apps/echo-hname created
+[root@m-k8s ~]# kubectl scale deployment echo-hname --replicas=9
+deployment.apps/echo-hname scaled
+
+# 각 노드로 공평하게 배분되었는지 확인
+# -o=custom-columns : 사용자가 임의로 구성할 수 있는 열을 의미
+
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                         IP               STATUS    NODE
+echo-hname-5d754d565-69wgw   172.16.103.139   Running   w2-k8s
+echo-hname-5d754d565-9t9s8   172.16.221.134   Running   w1-k8s
+echo-hname-5d754d565-jdzrt   172.16.132.6     Running   w3-k8s
+echo-hname-5d754d565-khrrr   172.16.132.8     Running   w3-k8s
+echo-hname-5d754d565-qlk6f   172.16.103.138   Running   w2-k8s
+echo-hname-5d754d565-qzs9v   172.16.221.136   Running   w1-k8s
+echo-hname-5d754d565-qzvkv   172.16.103.137   Running   w2-k8s
+echo-hname-5d754d565-rd9cf   172.16.221.135   Running   w1-k8s
+echo-hname-5d754d565-sz5nm   172.16.132.7     Running   w3-k8s
+```
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
