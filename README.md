@@ -1154,7 +1154,90 @@ w3-k8s Ready,SchedulingDisabled  <none>  131m   v1.18.4
 node/w3-k8s uncordoned
 ```
 
-### <파드 업데이트하고 복구하기>
+### <파드 업데이트 및 복구>
+
+- 컨테이너에 새로운 기능 추가, 버그가 있어 업데이트가 필요한 상황 및 업데이트 도중 문제로 기존 버전으로 복구가 필요한 상황 등 있음
+
+- 버전을 정하는 image: nginx:1.15.12에서 설치할 컨테이너 버전을 지정하고, 설치한 후에 단계별로 버전을 업데이트 시행
+
+[rollout-nginx.yaml]
+```
+01apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollout-nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.15.12
+```
+
+[Console]
+
+```
+# 컨테이너 버전 업테이트를 테스트하기 위한 파드 배포
+# --recode : 배포된 정보의 히스토리 기록
+
+[root@m-k8s ~]# kubectl apply -f ~/_Book_k8sInfra/ch3/3.2.10/rollout-nginx.yaml --record
+deployment.apps/rollout-nginx created
+
+# rollout history : record 옵션으로 기록된 히스토리 확인
+
+[root@m-k8s ~]# kubectl rollout history deployment rollout-nginx
+deployment.apps/rollout-nginx
+REVISION  CHANGE-CAUSE
+1         kubectl apply --filename=/root/_Book_k8sInfra/ch3/3.2.10/rollout-nginx.yaml --record=true
+
+# 배포된 파드의 정보 확인(파드 이름과 IP를 위주로 보기)
+
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                             IP               STATUS    NODE
+rollout-nginx-5b7c85b5c9-g8x8x   172.16.103.143   Running   w2-k8s
+rollout-nginx-5b7c85b5c9-xl5db   172.16.221.141   Running   w1-k8s
+rollout-nginx-5b7c85b5c9-zwpgk   172.16.132.9     Running   w3-k8s 
+
+# curl -I(헤더 정보만 보여주는 옵션) : 컨테이너 버전 확인
+
+[root@m-k8s ~]# curl -I --silent 172.16.103.143 | grep Server 
+Server: nginx/1.15.12
+
+# set image 명령으로 컨테이너 버전을 1.16.0으로 업데이트
+# --recode로 히스토리 기록
+
+[root@m-k8s ~]# kubectl set image deployment rollout-nginx nginx=nginx:1.16.0 --record
+deployment.apps/rollout-nginx image updated
+
+#업데이트한 후에 파드의 상태를 확인(파드 이름과 IP를 위주로 보기)
+
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                             IP               STATUS    NODE
+rollout-nginx-7598b44f45-cp9kk   172.16.132.10    Running   w3-k8s
+rollout-nginx-7598b44f45-nscgk   172.16.103.144   Running   w2-k8s
+rollout-nginx-7598b44f45-w6swb   172.16.221.142   Running   w1-k8s
+```
+
+- 파드들의 이름과 IP가 변경됨
+
+- 파드는 언제든지 지우고 다시 생성할 수 있음
+
+- 파드가 속한 컨테이너를 업데이트 하는 가장 쉬운 방법은 파드를 관리하는 replicas의 수를 줄이고 늘려 파드를 새로 생성하는 것
+
+- 시스템 영향을 최소화하기 위해 replicas에 속한 파드를 하나씩 순차적으로 지우고 생성
+
+- 파드 수가 많으면 하나씩이 아니라 다수의 파드가 업데이트 됨(업데이트 기본값 : 전체의 1/4개, 최솟값 : 1개)
+
+<img src="https://user-images.githubusercontent.com/101415950/197939848-8d8b0502-b9a6-4ce8-bd12-0e3a7a72d9ad.png" width="100%" height="100%">
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
