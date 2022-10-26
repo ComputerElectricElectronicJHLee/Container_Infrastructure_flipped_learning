@@ -797,11 +797,27 @@ nginx-pod                    1/1     Running   0          87s
 Error from server (NotFound): the server could not find the requested resource
 ```
 
+- kubectl scale pod 파드명 --replicas=갯수 : 파드의 수를 작성한 갯수로 변경하는 명령어
+
+- Deployment 오브젝트에 속하지 않아 파드 수를 관리하지 못하므로 리소스를 확인할 수 없다는 에러 발생
+
 [ReplicaSet : Deployment로 생성된 dpy-nginx]
 ```
 [root@m-k8s ~]# kubectl scale deployment dpy-nginx --replicas=3
 deployment.apps/dpy-nginx scaled
+[root@m-k8s ~]# kubectl get pods -o wide 
+NAME                         READY   STATUS    …   AGE     IP              NODE   …
+dpy-nginx-7cd4d79cc9-td8nk   1/1     Running   …   39s     172.16.132.3    w3-k8s …
+dpy-nginx-7cd4d79cc9-xdbvx   1/1     Running   …   39s     172.16.103.134  w2-k8s …
+dpy-nginx-7cd4d79cc9-xmv28   1/1     Running   …   7m47s   172.16.221.129  w1-k8s …
+nginx-pod                    1/1     Running   …   8m24s   172.16.103.132  w2-k8s …
 ```
+
+- Deployment를 사용하여 파드 수를 관리하여 올바르게 실행됨
+
+- kubectl get pods, kubectl get pod 단수 복수 표현 둘다 동일하게 적용됨
+
+#### <Spec 지정하여 오브젝트 생성>
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
