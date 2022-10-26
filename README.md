@@ -1160,6 +1160,8 @@ node/w3-k8s uncordoned
 
 - 버전을 정하는 image: nginx:1.15.12에서 설치할 컨테이너 버전을 지정하고, 설치한 후에 단계별로 버전을 업데이트 시행
 
+<b>1. 업데이트</b>
+
 [rollout-nginx.yaml]
 ```
 01apiVersion: apps/v1
@@ -1237,7 +1239,9 @@ rollout-nginx-7598b44f45-w6swb   172.16.221.142   Running   w1-k8s
 
 - 파드 수가 많으면 하나씩이 아니라 다수의 파드가 업데이트 됨(업데이트 기본값 : 전체의 1/4개, 최솟값 : 1개)
 
-<img src="https://user-images.githubusercontent.com/101415950/197939848-8d8b0502-b9a6-4ce8-bd12-0e3a7a72d9ad.png" width="100%" height="100%">
+<img src="https://user-images.githubusercontent.com/101415950/197939848-8d8b0502-b9a6-4ce8-bd12-0e3a7a72d9ad.png" width="80%" height="80%">
+
+<b>2. 업데이트 실패 시 복구</b>
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
