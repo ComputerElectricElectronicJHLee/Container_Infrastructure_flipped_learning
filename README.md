@@ -1243,5 +1243,65 @@ rollout-nginx-7598b44f45-w6swb   172.16.221.142   Running   w1-k8s
 
 <b>2. 업데이트 실패 시 복구</b>
 
+```
+# set image 명령으로 컨테이너 버전을 의도(1.17.2)와 다르게 1.17.23으로 입력
+
+[root@m-k8s ~]# kubectl set image deployment rollout-nginx nginx=nginx:1.17.23 --record
+deployment.apps/rollout-nginx image updated
+
+# 파드가 삭제되지 않고 pending(대기 중) 상태에서 넘어가지 않음
+
+[root@m-k8s ~]# kubectl get pods \
+-o=custom-columns=NAME:.metadata.name,IP:.status.podIP,STATUS:.status.phase,NODE:.spec.nodeName
+NAME                             IP               STATUS    NODE
+rollout-nginx-7598b44f45-cp9kk   172.16.132.10    Running   w3-k8s
+rollout-nginx-7598b44f45-nscgk   172.16.103.144   Running   w2-k8s
+rollout-nginx-7598b44f45-w6swb   172.16.221.142   Running   w1-k8s
+rollout-nginx-7759875c65-wghcd   172.16.103.149   Pending  w2-k8s
+
+# rollout status로 문제 확인
+# 새로운 replicas는 생성했으나 Deployment 배포 단계에서 더 이상 진행되지 않은 것을 확인
+# 여러 차례 Deployment 생성 시도 후 실패했다는 에러메시지 확인
+
+[root@m-k8s ~]# kubectl rollout status deployment rollout-nginx
+Waiting for deployment "rollout-nginx" rollout to finish: 1 out of 3 new replicas have been updated...
+error: deployment "rollout-nginx" exceeded its progress deadline
+
+# describe 명령으로 쿠버네티스 상태 자세히 살펴보기
+# replicas가 새로 생성되는 과정에서 멈춤
+# 1.17.23 버전의 nginx 컨테이너가 없기 때문
+
+[root@m-k8s ~]# kubectl describe deployment rollout-nginx
+Name:                   rollout-nginx
+[중략]
+OldReplicaSets:  rollout-nginx-7598b44f45 (3/3 replicas created)
+NewReplicaSet:   rollout-nginx-7759875c65 (1/1 replicas created) 
+[생략]
+
+# rollout history로 revision 확인 후 rollout undo으로 명령 실행을 취소하여 버전 되돌림
+
+[root@m-k8s ~]# kubectl rollout history deployment rollout-nginx
+deployment.apps/rollout-nginx
+REVISION  CHANGE-CAUSE
+1         kubectl apply --filename=~/_Book_k8sInfra/ch3/3.2.10/rollout-nginx.yaml --record=true
+2         kubectl set image deployment rollout-nginx nginx=nginx:1.16.0 --record=true
+3         kubectl set image deployment rollout-nginx nginx=nginx:1.17.23 
+
+[root@m-k8s ~]# kubectl rollout undo deployment rollout-nginx
+deployment.apps/rollout-nginx rolled back
+
+# rollout history로 확인 결과 revision 4가 추가되고 revision 2가 삭제됨
+# revision 2로 되돌렸기 때문에 revision 2는 삭제되고 가장 최근 상태는 revision 4가 됨
+
+[root@m-k8s ~]# kubectl rollout history deployment rollout-nginx
+deployment.apps/rollout-nginx
+REVISION  CHANGE-CAUSE
+1         kubectl apply --filename=/root/_Book_k8sInfra/ch3/3.2.10/rollout-nginx.yaml --record=true
+3         kubectl set image deployment rollout-nginx nginx=nginx:1.17.23 --record=true
+4         kubectl set image deployment rollout-nginx nginx=nginx:1.16.0 --record=true 
+```
+
+![image](https://user-images.githubusercontent.com/101415950/197941594-06abb904-445f-454b-ba76-ccb9682f7fd9.png)
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
