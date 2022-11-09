@@ -1573,5 +1573,7 @@ Server: nginx/1.15.12
 
 	- 이미지는 이미지가 같은 내용일 경우 여러 이미지에 동일한 레이어를 공유하므로 전체 용량 감소
 
+<img src="https://user-images.githubusercontent.com/101415950/200861069-a766e898-6f41-46a0-989c-d285ef75aac6.png" width="80%" height="80%">
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
