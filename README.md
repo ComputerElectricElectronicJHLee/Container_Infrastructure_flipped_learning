@@ -1864,7 +1864,7 @@ kustomize-install.sh  metallb-l2config.yaml  metallb.yaml  namespace.yaml
 
 - --resources 명령은 커스터마이즈 명령을 이용하여 kustomization.yaml을 만들기 위한 소스파일을 정의
 
-- cat 명령어를 통해 kustomization.yaml 확인(리소스, 네임스페이스 확인)
+- 4. cat 명령어를 통해 kustomization.yaml 확인(리소스, 네임스페이스 확인)
 
 ```
 [root@m-k8s 5.2.2]# kustomize create --namespace=metallb-system --resources namespace.yaml,metallb.yaml,metallb-l2config.yaml
@@ -1879,6 +1879,77 @@ namespace: metallb-system
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202902915-0f114fb5-9aaf-4714-9ba8-7388094c2751.png)
 
+- 5. 설치된 이미지를 안정적인 버전으로 유지하기 위해 kustomize edit set image 옵션을 이용하여   
+     MetalLB controller와 speaker의 이미지 태그를 v0.8.2로 지정
+
+- 6. cat 명령어를 통해 kustomization.yaml 확인(이미지 태그 정보 v0.8.2 확인)
+
+```
+[root@m-k8s 5.2.2]# kustomize edit set image metallb/controller:v0.8.2
+[root@m-k8s 5.2.2]# kustomize edit set image metallb/speaker:v0.8.2
+[root@m-k8s 5.2.2]# cat kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- metallb.yaml
+- metallb-l2config.yaml
+namespace: metallb-system
+images:
+- name: metallb/controller
+  newTag: v0.8.2
+- name: metallb/speaker
+  newTag: v0.8.2
+```
+![image](https://user-images.githubusercontent.com/101415950/202903166-43486f6a-c959-456a-8cd3-907205193d1d.png)
+
+- 7-1. kustomize build 명령으로 MetalLB 설치를 위한 매니페스트를 생성
+
+- 7-2. metallb-l2config.yaml을 통해 config 맵이 만들어졌으며 이미지 태그인 v0.8.2가 적용된 것을 확인
+
+```
+[root@m-k8s 5.2.2]# kustomize build
+apiVersion: v1
+kind: Namespace
+[중략]
+data:
+  config: |
+    address-pools:
+    - name: metallb-ip-range
+      protocol: layer2
+      addresses:
+      - 192.168.1.11-192.168.1.19
+kind: ConfigMap
+[중략]
+        - --config=config
+        image: metallb/controller:v0.8.2
+[중략]
+        image: metallb/speaker:v0.8.2
+        imagePullPolicy: IfNotPresent
+[생략]
+```
+![image](https://user-images.githubusercontent.com/101415950/202903580-49629efb-8899-4fa8-88b2-4ee985f9fcfb.png)
+
+- 8-1. 이를 파일로 저장해 MetalLB를 배포할 수도 있음
+
+- 8-2. 편의를 위해 아래 명령으로 빌드한 결과가 바로 kubectl apply에 인자로 전달돼 배포하도록 실행
+```
+[root@m-k8s 5.2.2]# kustomize build | kubectl apply -f -
+namespace/metallb-system created
+serviceaccount/controller created
+serviceaccount/speaker created
+podsecuritypolicy.policy/speaker created
+role.rbac.authorization.k8s.io/config-watcher created
+clusterrole.rbac.authorization.k8s.io/metallb-system:controller created
+clusterrole.rbac.authorization.k8s.io/metallb-system:speaker created
+rolebinding.rbac.authorization.k8s.io/config-watcher created
+clusterrolebinding.rbac.authorization.k8s.io/metallb-system:controller created
+clusterrolebinding.rbac.authorization.k8s.io/metallb-system:speaker created
+configmap/config created
+deployment.apps/controller created
+daemonset.apps/speaker created
+```
+![image](https://user-images.githubusercontent.com/101415950/202903731-ced918b0-6e52-49fb-bb55-bedbe0bd7ac6.png)
 
 
 ## 마크다운 언어 참조
