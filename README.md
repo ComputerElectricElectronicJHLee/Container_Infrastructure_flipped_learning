@@ -1820,6 +1820,45 @@ Server: nginx/1.15.12
 
 <img src="https://user-images.githubusercontent.com/101415950/202900976-b7eaf335-15f5-4055-a3ac-8edfaa95b6f9.png" width="80%" height="80%">
 
+- 커스터마이즈를 사용하여 MetalLB를 만드는 것은 명세서인 kustomization.yaml을 만드는 과정과 같음
+
+- 만들어진 kustomization.yaml을 통해 원하는 내용이 담긴 MetalLB 매니페스트를 생성하고 이 매니페스트를 통해 배포하는 것
+
+- 즉 커스터마이즈는 단순히 최종 매니페스트 생성을 도와주는 도구
+
+<b>[실습]</b>
+
+- 1-1. 커스터마이즈 명령을 사용하기 위해 kustomize-install.sh를 실행
+
+- 1-2. 커스터 마이즈 압축 파일을 내려받은 후에 이를 해제하고 /usr/local/bin으로 옮겨놓을 것
+
+- 1-3. 이후 헬름도 동일한 과정을 통해서 배시 셸에서 바로 실행할 수 있게 만들 것
+
+```
+[root@m-k8s ~]# ~/_Book_k8sInfra/ch5/5.2.2/kustomize-install.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 12.4M  100 12.4M    0     0  4562k      0  0:00:02  0:00:02 --:--:-- 5379k
+kustomize install successfully
+```
+![image](https://user-images.githubusercontent.com/101415950/202901560-288ade11-efab-44ee-9139-ad571a43101a.png)
+
+- 2-1. 커스터마이즈에서 리소스 및 주소 할당 영역(Pool)을 구성할 때 사용할 파일들을 확인하기 위해 ~/ch5/5.2.2로 디렉터리 이동
+
+- 2-2. metallb-l2config.yaml,  metallb.yaml,  namespace.yaml이 있는지 확인
+
+- 2-3. 3장에서 네임스페이스 설정 부분이 matallb.yaml 배포에 포함됐으나, 리소스에 여러가지 항목이 포함될 수 있음을 표현하기 위해   
+       네임스페이스 분리
+
+```
+[root@m-k8s ~]# cd ~/_Book_k8sInfra/ch5/5.2.2
+[root@m-k8s 5.2.2]# ls
+kustomize-install.sh  metallb-l2config.yaml  metallb.yaml  namespace.yaml
+```
+![image](https://user-images.githubusercontent.com/101415950/202901874-8a495eef-ce5d-40f1-b08f-fc1284895023.png)
+
+
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
