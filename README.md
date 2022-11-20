@@ -1951,6 +1951,50 @@ daemonset.apps/speaker created
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202903731-ced918b0-6e52-49fb-bb55-bedbe0bd7ac6.png)
 
+- 9. MetalLB가 정상적으로 배포되었는지 아래 명령을 통해 확인
+
+```
+[root@m-k8s 5.2.2]# kubectl get pods -n metallb-system
+NAME                          READY   STATUS    RESTARTS   AGE
+controller-5f98465b6b-7hnms   1/1     Running   0          2m34s
+speaker-92n5l                 1/1     Running   0          2m34s
+speaker-dbsgr                 1/1     Running   0          2m34s
+speaker-pgbfk                 1/1     Running   0          2m34s
+speaker-v4wwl                 1/1     Running   0          2m34s
+[root@m-k8s 5.2.2]# kubectl get configmap -n metallb-system
+NAME     DATA   AGE
+config   1      3m4s
+```
+
+![image](https://user-images.githubusercontent.com/101415950/202903881-c6a727b1-56dc-4c61-9656-3281fd79c518.png)
+
+- 10. 아래 명령으로 커스터마이즈를 통해 고정한 MetalLB의 태그가 v0.8.2인지 확인
+
+```
+[root@m-k8s 5.2.2]# kubectl describe pods -n metallb-system | grep Image:
+    Image:         metallb/controller:v0.8.2
+    Image:         metallb/speaker:v0.8.2
+    Image:         metallb/speaker:v0.8.2
+    Image:         metallb/speaker:v0.8.2
+    Image:         metallb/speaker:v0.8.2
+```
+![image](https://user-images.githubusercontent.com/101415950/202904012-c0e17e7c-2c20-4e77-9e97-e99518f70ad4.png)
+
+- 11. Deployment 1개를 배포한 다음 LoadBalancer 타입으로 노출하고 IP가 정상적으로 할당되었는지 확인
+
+```
+[root@m-k8s 5.2.2]# kubectl create deployment echo-ip --image=sysnet4admin/echo-ip
+deployment.apps/echo-ip created
+[root@m-k8s 5.2.2]# kubectl expose deployment echo-ip --type=LoadBalancer --port=80
+service/echo-ip exposed
+[root@m-k8s 5.2.2]# kubectl get service echo-ip
+NAME      TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)        AGE
+echo-ip   LoadBalancer   10.105.16.68   192.168.1.11   80:30582/TCP   16s
+```
+![image](https://user-images.githubusercontent.com/101415950/202904175-064f4569-27cb-4622-88a0-395be545bbdd.png)
+
+- 12. 호스트 PC(또는 노트북)에 192.168.1.11을 입력해 echo-ip가 정상적으로 응답하는지 확인
+![image](https://user-images.githubusercontent.com/101415950/202904250-ad08b0e9-eebe-4b74-9000-4ef9524ace45.png)
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
