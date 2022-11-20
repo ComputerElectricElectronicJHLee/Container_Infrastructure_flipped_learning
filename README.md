@@ -1858,6 +1858,27 @@ kustomize-install.sh  metallb-l2config.yaml  metallb.yaml  namespace.yaml
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202901874-8a495eef-ce5d-40f1-b08f-fc1284895023.png)
 
+- 3. 커스터마이즈로 변경될 작업을 정의하기 위해 kustomization.yaml을 생성
+
+- --namespace는 작업의 네임스페이스를 설정
+
+- --resources 명령은 커스터마이즈 명령을 이용하여 kustomization.yaml을 만들기 위한 소스파일을 정의
+
+- cat 명령어를 통해 kustomization.yaml 확인(리소스, 네임스페이스 확인)
+
+```
+[root@m-k8s 5.2.2]# kustomize create --namespace=metallb-system --resources namespace.yaml,metallb.yaml,metallb-l2config.yaml
+[root@m-k8s 5.2.2]# cat kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- metallb.yaml
+- metallb-l2config.yaml
+namespace: metallb-system
+```
+![image](https://user-images.githubusercontent.com/101415950/202902915-0f114fb5-9aaf-4714-9ba8-7388094c2751.png)
+
 
 
 ## 마크다운 언어 참조
