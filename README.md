@@ -2376,7 +2376,7 @@ speaker:
 configmap:
   ipRange: 192.168.1.11-192.168.1.13
 ```
-![image](https://user-images.githubusercontent.com/101415950/202913448-f5cba8ec-2a5a-4d00-b407-c3cc987765d9.png)
+<img src="https://user-images.githubusercontent.com/101415950/202913448-f5cba8ec-2a5a-4d00-b407-c3cc987765d9.png" width="50%" height="50%">
 
 - 그리고 이 값을 치환하면 아래와 같음
 
