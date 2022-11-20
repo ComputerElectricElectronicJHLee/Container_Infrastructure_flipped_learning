@@ -2358,6 +2358,38 @@ deployment.apps "echo-ip" deleted
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202912741-e7070f58-8f3b-4d3a-b66f-34a1e09f79a7.png)
 
+<b>[헬름에 필요한 set 값을 확인하는 방법]</b>
+
+- 헬름에서 가변적인 인자를 사용하기 위해 --set 이후에 인자를 선언
+
+- 3장의 custom-columns에서 값을 확인하는 법과 매우 유사
+
+- 적용하려는 차트에 있는 values.yaml의 내용
+
+```
+controller:
+  image: metallb/controller
+  tag: v0.8.2
+speaker:
+  image: metallb/speaker
+  tag: v0.8.2
+configmap:
+  ipRange: 192.168.1.11-192.168.1.13
+```
+![image](https://user-images.githubusercontent.com/101415950/202913448-f5cba8ec-2a5a-4d00-b407-c3cc987765d9.png)
+
+- 그리고 이 값을 치환하면 아래와 같음
+
+	- controller.tag = v0.8.3
+
+	- speaker.tag = v0.8.3
+
+	- configmap.ipRange = 192.168.1.11-192.168.1.29
+
+- 위와 같은 방법으로 헬름에서 변경하고 싶은 변수를 쉽게 확인하고 적용 가능
+
+- helm show values [차트] 명령어로 터미널에서 간략히 확인 가능
+
 <b>[정리]</b>
 
 - 커스터 마이즈를 이용하면 매니페스트를 동적으로 이용할 수 있지만 일부 값들은 변경할 수 없는 한계가 있음을 확인
