@@ -2204,6 +2204,107 @@ helm installed into /usr/local/bin/helm
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202910936-b9e9645a-d5ed-43ac-b1d1-4fc8c0ca8bd9.png)
 
+- 2-1. MetalLB를 설치하려면 헬름 차트를 등록할 주소를 알아야 하므로 아티팩트허브에서 metallb를 검색하여 주소 확인
+
+<img src="https://user-images.githubusercontent.com/101415950/202911293-6576f60b-c636-4fc2-9844-867d235c9175.png" width="80%" height="80%">
+
+- 3-1. 상단에 위치한 아이템을 눌러 metallb 차트에 대한 정보를 확인
+
+- 3-2. metallb 아이템을 클릭하면 차트에 대한 상세한 내용을 확인
+
+<img src="https://user-images.githubusercontent.com/101415950/202911349-86ba124e-63b5-44a4-9ecf-75c9cbd89045.png" width="80%" height="80%">
+
+- 4-1. metallb의 상세 페이지에서는 차트 저장소(helm-charts) 등록법 외에도 차트에 대한 다양한 정보를 함께 제공
+
+- 4-2. 상세 페이지를 통해서 추가해야 하는 차트 주소 및 등록하는 방법도 함께 확인 가능
+
+- 4-3. 아무런 설정값의 변경없이 기본적으로 제공하는 애플리케이션 버전(0.8.2)도 확인이 가능
+
+<img src="https://user-images.githubusercontent.com/101415950/202911465-3bdcd889-8ff1-4e65-b2b8-7145de097b97.png" width="80%" height="80%">
+
+- 5-1. 실제로 저장소를 helm repo add 명령으로 등록해서 MetalLB를 설치할 준비를 실시
+
+- 5-2. 헬름 차트 저장소인 https://iac-source.github.io/helm-charts는 저자가 만든 저장소로, 아티팩트허브에는 이 경로만을 표시
+
+- 5-3. edu는 헬름 차트 저장소를 대표하는 이름의 역할을 하는 것으로 자유롭게 변경 등록 가능 (책에서는 edu를 사용)
+
+```
+[root@m-k8s ~]# helm repo add edu https://iac-source.github.io/helm-charts
+"edu" has been added to your repositories
+```
+![image](https://user-images.githubusercontent.com/101415950/202911667-a9b04e1e-5b1f-41b1-afc9-f91f4ce8b130.png)
+
+- 6-1. 헬름 차트 저장소가 정상적으로 등록됐는지 helm repo list 명령으로 저장소 목록 확인 (edu 차트 저장소 등록 확인됨)
+```
+[root@m-k8s ~]# helm repo list
+NAME    URL
+edu     https://iac-source.github.io/helm-charts
+```
+![image](https://user-images.githubusercontent.com/101415950/202911728-a6489074-4f95-4e5d-bdd4-64a1faf4e4bd.png)
+
+- 7-1. 헬름으로 차트 저장소를 추가한 시점의 차트를 로컬 캐시에 저장해 install과 같은 작업 수행시 먼저 로컬에 있는 캐시 차트 정보를 참조
+
+- 7-2. 저장소 추가 이후에 변경된 차트가 있다면 변경된 정보를 캐시에 업데이트할 수 있도록 아래 명령을 통해 최신 차트 정보를 동기화
+
+- 7-3. 이는 관습적으로 이루어지는 것으로 현재의 랩에서는 필요한 요소는 아니지만 이렇게 진행하는 것이 향후 문제를 방지할 수 있음
+
+```
+[root@m-k8s ~]# helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "edu" chart repository
+Update Complete. ⎈ Happy Helming!⎈
+```
+![image](https://user-images.githubusercontent.com/101415950/202911891-de22d7a6-6909-4c60-b443-b5b872a29721.png)
+
+- 8-1. 앞서 등록 및 업데이트한 저장소 edu로부터 MetalLB를 설치
+
+- 8-2. 헬름 차트를 설치할 때 사용하는 명령어는 helm install이며 커스터마이즈와 다르게 인자를 바로 명령줄에서 받아서 처리
+
+- 8-3. 현재 사용하는 인자는 다음과 같음
+
+	- --namespace
+	
+		- 헬름 차트를 통해 생성되는 애플리케이션이 위치할 네임스페이스를 지정
+	
+	- --create-namespace
+	
+		- 네임스페이스 옵션으로 지정된 네임스페이스가 존재하지 않는 경우 네임스페이스를 생성
+	
+	- --set
+
+		- 헬름에서 사용할 변수를 명령 인자로 전달
+
+		- key1=value1, key2=value2와 같이 쉼표를 사용해 한 줄에서 여러 인자를 넘겨줄 수 있음
+
+		- 그러나 가독성을 높이기 위해 책에서는 이를 사용하지 않음
+
+- 8-4. 일반적으로 배포 이후에 간략한 메시지와 함께 제작자가 작성한 사용 설명서가 함께 출력
+
+- 8-5. 이를 통하여 배포가 완료됐음을 확인
+
+- 8-6. 이후 실습에서 설치하는 헬름 차트는 지금보다 더 많은 부분의 인자를 입력받으므로 사전에 구성된 스크립트를 통해 차트 설치 예정
+
+```
+[root@m-k8s ~]# helm install metallb edu/metallb \
+> --namespace=metallb-system \
+> --create-namespace \
+> --set controller.tag=v0.8.3 \
+> --set speaker.tag=v0.8.3 \
+> --set configmap.ipRange=192.168.1.11-192.168.1.29
+NAME: metallb
+LAST DEPLOYED: Mon Nov 21 00:53:24 2022
+NAMESPACE: metallb-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+MetalLB load-balancer is successfully installed.
+1. IP Address range 192.168.1.11-192.168.1.29 is available.
+2. You can create a LoadBalancer service with following command below.
+kubectl expose deployment [deployment-name] --type=LoadBalancer --name=[LoadBalancer-name] --port=[external port]
+```
+![image](https://user-images.githubusercontent.com/101415950/202912022-c9d67ada-5890-42aa-993c-64eb1606b9c8.png)
+
 
 ## 마크다운 언어 참조
 
