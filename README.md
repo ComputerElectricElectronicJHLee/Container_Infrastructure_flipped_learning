@@ -2358,6 +2358,11 @@ deployment.apps "echo-ip" deleted
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202912741-e7070f58-8f3b-4d3a-b66f-34a1e09f79a7.png)
 
+<b>[정리]</b>
+
+- 커스터 마이즈를 이용하면 매니페스트를 동적으로 이용할 수 있지만 일부 값들은 변경할 수 없는 한계가 있음을 확인
+
+- 헬름을 이용하면 이 한계를 뛰어넘어 필요한 값을 동적으로 선언하고 사용할 수 있음을 확인
 
 ## 마크다운 언어 참조
 
