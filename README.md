@@ -1792,7 +1792,7 @@ Server: nginx/1.15.12
 
 	- <b>매니페스트의 일부가 아닌 모든 내용을 설정할 수 있는 값을 제공해 필요에 따라 사용자 환경에 맞는 설정값으로 변경 가능</b>
 
-<img src="https://user-images.githubusercontent.com/101415950/202899928-97b02a96-87ed-4b36-88e1-f06ef6ac6a5d.png" width="80%" height="80%">
+<img src="https://user-images.githubusercontent.com/101415950/202900728-d33fdde1-01b0-46db-b07e-652a6dac7288.png" width="80%" height="80%">
 
 ### 커스터마이즈로 배포 간편화하기
 
