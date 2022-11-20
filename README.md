@@ -2023,6 +2023,39 @@ deployment.apps "echo-ip" deleted
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202905166-ce4d457b-40ff-47b7-b0d0-b7f125e1384e.png)
 
+[커스터 마이즈에서 config 맵을 쓰는 다른 방법]
+
+- 커스터 마이즈에는 Config 맵을 리소스로 넣는 것이 아니라 Config 맵의 내용만을 읽어 들일 수 있도록 하는 옵션을 제공
+
+- 이렇게 읽어 들인 Config 맵을 Generator라는 요소를 통해 등록
+
+- Generator는 Config 맵이나 시크릿의 데이터를 입력하면 각 형식에 맞게 생성
+
+- 하지만 이렇게 넣는 경우 기존과 같은 이름의 구성 요소들이 존재할 수 있음
+
+- 중복을 방지하기 위해 커스터마이즈에서는 이름에 Hash를 추가로 적용
+
+- 그러나 MetalLB는 고정된 Config 맵 이름을 읽도록 설계돼 있으므로 Hash가 추가된 Config 맵을 불러올 수 없음
+
+- 그러므로 MetalLB에 Config 맵이 적용되지 않았기 때문에 로드밸런서 서비스에 IP가 할당되지 않음
+
+- 커스터마이즈의 GeneratorOptions를 disableNameSuffixHash: true로 변경해 문제를 해결할 수 있음
+
+- 그러나 이런 과정은 다소 실습하기에 번거로움이 있어서 Config 맵 자체를 리소스에 포함하여 실습 진행
+
+<img src="https://user-images.githubusercontent.com/101415950/202907453-87aeaa2f-f1e2-44a5-a636-ccee4c7f9a51.png" width="80%" height="80%">
+
+<b>[정리]</b>
+
+- 커스터마이즈를 이용하면 MetalLB의 다양한 설정을 사용자의 입맛에 맞게 변경하고 구현할 수 있음
+
+- 그러나 여러 가지 변경할 부분을 사용자가 직접 kustomization.yaml에 추가하고 최종적으로 필요한 매니페스트를 만들어 배포해야 함
+
+- 이러한 다소 수동적인 작성 방식이 아닌 선언적으로 필요한 내용을 제공하고 이에 맞게 배포하기 위해 헬름을 사용
+
+- 헬름은 커스터마이즈를 통해서 변경할 수 없었던 주소 할당 영역과 같은 값도 배포 시에 같이 변경 가능
+
+### 헬름으로 배포 간편화하기
 
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
