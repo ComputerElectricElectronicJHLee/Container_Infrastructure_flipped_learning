@@ -1997,5 +1997,32 @@ echo-ip   LoadBalancer   10.105.16.68   192.168.1.11   80:30582/TCP   16s
 
 ![image](https://user-images.githubusercontent.com/101415950/202904250-ad08b0e9-eebe-4b74-9000-4ef9524ace45.png)
 
+- 13-1. 다음 실습을 위해 MetalLB를 삭제 후 배포했던 echo-ip 관련 오브젝트도 함께 삭제, 그리고 홈 디렉터리로 이동
+
+```
+[root@m-k8s 5.2.2]# kustomize build | kubectl delete -f -
+namespace "metallb-system" deleted
+serviceaccount "controller" deleted
+serviceaccount "speaker" deleted
+podsecuritypolicy.policy "speaker" deleted
+role.rbac.authorization.k8s.io "config-watcher" deleted
+clusterrole.rbac.authorization.k8s.io "metallb-system:controller" deleted
+clusterrole.rbac.authorization.k8s.io "metallb-system:speaker" deleted
+rolebinding.rbac.authorization.k8s.io "config-watcher" deleted
+clusterrolebinding.rbac.authorization.k8s.io "metallb-system:controller" deleted
+clusterrolebinding.rbac.authorization.k8s.io "metallb-system:speaker" deleted
+configmap "config" deleted
+deployment.apps "controller" deleted
+daemonset.apps "speaker" deleted
+[root@m-k8s 5.2.2]# kubectl delete service echo-ip
+service "echo-ip" deleted
+[root@m-k8s 5.2.2]# kubectl delete deployment echo-ip
+deployment.apps "echo-ip" deleted
+[root@m-k8s 5.2.2]# cd ~
+[root@m-k8s ~]#
+```
+![image](https://user-images.githubusercontent.com/101415950/202905166-ce4d457b-40ff-47b7-b0d0-b7f125e1384e.png)
+
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
