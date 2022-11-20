@@ -1575,5 +1575,23 @@ Server: nginx/1.15.12
 
 <img src="https://user-images.githubusercontent.com/101415950/200861069-a766e898-6f41-46a0-989c-d285ef75aac6.png" width="80%" height="80%">
 
+---
+### 5. 젠킨스(JenKins)
+
+- 쿠버네티스를 사용하는 이유는 컨테이너 애플리케이션을 유연하고 빠르게 배포하고 운영하기 위함
+
+- 이전 4장 도커에 대한 사항 정리
+
+	- 깃허브 등 저장소에 저장된 애플리케이션 소스 코드를 내려받아 도커 컨테이너 이미지로 빌드
+	
+	- 빌드한 컨테이너 이미지를 쿠버네티스에서 사용할 수 있도록 레지스트리에 등록
+	
+	- 레지스트리에 등록된 이미지를 기반으로 쿠버네티스 오브젝트 생성
+	
+	- 생성한 오브젝트(파드/Deployment)를 외부에서 접속할 수 있도록 서비스 형태로 노출
+
+<img src="https://user-images.githubusercontent.com/101415950/202891494-ed7d017b-a6ea-4361-bf1a-78e2d10b2c02.png" width="80%" height="80%">
+
+
 ## 마크다운 언어 참조
 https://gist.github.com/ihoneymon/652be052a0727ad59601
