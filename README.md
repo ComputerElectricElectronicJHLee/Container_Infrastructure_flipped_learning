@@ -1858,13 +1858,13 @@ kustomize-install.sh  metallb-l2config.yaml  metallb.yaml  namespace.yaml
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202901874-8a495eef-ce5d-40f1-b08f-fc1284895023.png)
 
-- 3. 커스터마이즈로 변경될 작업을 정의하기 위해 kustomization.yaml을 생성
+- 3-1. 커스터마이즈로 변경될 작업을 정의하기 위해 kustomization.yaml을 생성
 
 - --namespace는 작업의 네임스페이스를 설정
 
 - --resources 명령은 커스터마이즈 명령을 이용하여 kustomization.yaml을 만들기 위한 소스파일을 정의
 
-- 4. cat 명령어를 통해 kustomization.yaml 확인(리소스, 네임스페이스 확인)
+- 4-1. cat 명령어를 통해 kustomization.yaml 확인(리소스, 네임스페이스 확인)
 
 ```
 [root@m-k8s 5.2.2]# kustomize create --namespace=metallb-system --resources namespace.yaml,metallb.yaml,metallb-l2config.yaml
@@ -1879,10 +1879,10 @@ namespace: metallb-system
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202902915-0f114fb5-9aaf-4714-9ba8-7388094c2751.png)
 
-- 5. 설치된 이미지를 안정적인 버전으로 유지하기 위해 kustomize edit set image 옵션을 이용하여   
+- 5-1. 설치된 이미지를 안정적인 버전으로 유지하기 위해 kustomize edit set image 옵션을 이용하여   
      MetalLB controller와 speaker의 이미지 태그를 v0.8.2로 지정
 
-- 6. cat 명령어를 통해 kustomization.yaml 확인(이미지 태그 정보 v0.8.2 확인)
+- 6-1. cat 명령어를 통해 kustomization.yaml 확인(이미지 태그 정보 v0.8.2 확인)
 
 ```
 [root@m-k8s 5.2.2]# kustomize edit set image metallb/controller:v0.8.2
@@ -1951,7 +1951,7 @@ daemonset.apps/speaker created
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202903731-ced918b0-6e52-49fb-bb55-bedbe0bd7ac6.png)
 
-- 9. MetalLB가 정상적으로 배포되었는지 아래 명령을 통해 확인
+- 9-1. MetalLB가 정상적으로 배포되었는지 아래 명령을 통해 확인
 
 ```
 [root@m-k8s 5.2.2]# kubectl get pods -n metallb-system
@@ -1968,7 +1968,7 @@ config   1      3m4s
 
 ![image](https://user-images.githubusercontent.com/101415950/202903881-c6a727b1-56dc-4c61-9656-3281fd79c518.png)
 
-- 10. 아래 명령으로 커스터마이즈를 통해 고정한 MetalLB의 태그가 v0.8.2인지 확인
+- 10-1. 아래 명령으로 커스터마이즈를 통해 고정한 MetalLB의 태그가 v0.8.2인지 확인
 
 ```
 [root@m-k8s 5.2.2]# kubectl describe pods -n metallb-system | grep Image:
@@ -1980,7 +1980,7 @@ config   1      3m4s
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202904012-c0e17e7c-2c20-4e77-9e97-e99518f70ad4.png)
 
-- 11. Deployment 1개를 배포한 다음 LoadBalancer 타입으로 노출하고 IP가 정상적으로 할당되었는지 확인
+- 11-1. Deployment 1개를 배포한 다음 LoadBalancer 타입으로 노출하고 IP가 정상적으로 할당되었는지 확인
 
 ```
 [root@m-k8s 5.2.2]# kubectl create deployment echo-ip --image=sysnet4admin/echo-ip
@@ -1993,7 +1993,8 @@ echo-ip   LoadBalancer   10.105.16.68   192.168.1.11   80:30582/TCP   16s
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202904175-064f4569-27cb-4622-88a0-395be545bbdd.png)
 
-- 12. 호스트 PC(또는 노트북)에 192.168.1.11을 입력해 echo-ip가 정상적으로 응답하는지 확인
+- 12-1. 호스트 PC(또는 노트북)에 192.168.1.11을 입력해 echo-ip가 정상적으로 응답하는지 확인
+
 ![image](https://user-images.githubusercontent.com/101415950/202904250-ad08b0e9-eebe-4b74-9000-4ef9524ace45.png)
 
 ## 마크다운 언어 참조
