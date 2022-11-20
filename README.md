@@ -2305,6 +2305,59 @@ kubectl expose deployment [deployment-name] --type=LoadBalancer --name=[LoadBala
 ```
 ![image](https://user-images.githubusercontent.com/101415950/202912022-c9d67ada-5890-42aa-993c-64eb1606b9c8.png)
 
+- 9-1. 설치된 MetalLB가 정상적인 상태인지 배포상태 확인
+
+```
+[root@m-k8s ~]# kubectl get pods -n metallb-system
+NAME                          READY   STATUS    RESTARTS   AGE
+controller-85478cc585-8qjwc   1/1     Running   0          7m32s
+speaker-hxnjz                 1/1     Running   0          7m32s
+speaker-k59jv                 1/1     Running   0          7m32s
+speaker-lgvz8                 1/1     Running   0          7m32s
+speaker-zktzw                 1/1     Running   0          7m32s
+[root@m-k8s ~]# kubectl get configmap -n metallb-system
+NAME     DATA   AGE
+config   1      7m52s
+```
+![image](https://user-images.githubusercontent.com/101415950/202912402-692249af-5782-4bdf-bb3b-e98b4cac3cdb.png)
+
+- 10-1. 아래 명령으로 헬름 set 옵션을 통해서 변경된 MetalLB의 태그가 v0.8.3인지 확인
+
+```
+[root@m-k8s ~]# kubectl describe pods -n metallb-system | grep Image:
+    Image:         metallb/controller:v0.8.3
+    Image:         metallb/speaker:v0.8.3
+    Image:         metallb/speaker:v0.8.3
+    Image:         metallb/speaker:v0.8.3
+    Image:         metallb/speaker:v0.8.3
+```
+
+- 11-1. Deployment를 1개 배포하고 이를 LoadBalancer 타입으로 노출하고 IP가 정상적으로 할당되었는지 확인
+
+```
+[root@m-k8s ~]# kubectl create deployment echo-ip --image=sysnet4admin/echo-ip
+deployment.apps/echo-ip created
+[root@m-k8s ~]# kubectl expose deployment echo-ip --type=LoadBalancer --port=80
+service/echo-ip exposed
+[root@m-k8s ~]# kubectl get service echo-ip
+NAME      TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)        AGE
+echo-ip   LoadBalancer   10.101.83.251   192.168.1.11   80:32393/TCP   12s
+```
+![image](https://user-images.githubusercontent.com/101415950/202912666-e9a77ace-a3b1-47d4-b9ec-693d2b12cd8a.png)
+
+- 12-1. 호스트 노트북 또는 PC의 브라우저에 192.168.1.11을 입력하여 echo-ip가 정상적으로 응답하는지 확인
+![image](https://user-images.githubusercontent.com/101415950/202912694-9352d0b0-177b-4584-a773-3684d1690c5d.png)
+
+- 13-1. 이후 실습에서 MetalLB는 계속 사용할 것이므로, 배포했던 echo-ip 관련 오브젝트만 삭제
+
+```
+[root@m-k8s ~]# kubectl delete service echo-ip
+service "echo-ip" deleted
+[root@m-k8s ~]# kubectl delete deployment echo-ip
+deployment.apps "echo-ip" deleted
+```
+![image](https://user-images.githubusercontent.com/101415950/202912741-e7070f58-8f3b-4d3a-b66f-34a1e09f79a7.png)
+
 
 ## 마크다운 언어 참조
 
