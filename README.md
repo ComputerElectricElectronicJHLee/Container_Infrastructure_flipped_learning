@@ -2187,6 +2187,24 @@ deployment.apps "echo-ip" deleted
 
 	- 헬름 버전3에서는 틸러는 사라진 구성 요소
 
+<b>헬름으로 MetalLB 한 번에 만들기</b>
+
+- 1-1. 헬름 명령을 사용하기 위해 ch5/5.2.3/helm-install.sh를 실행하여 헬름 설치
+
+- 1-2. DESIRED_VERSION 환경변수를 설정해 헬름 버전을 최신 버전이 아닌 v3.2.1로 고정하여 설치(호환성 이슈 방지)
+
+- 1-3. 헬름 실행 파일도 /usr/local/bin에 위치
+
+```
+[root@m-k8s ~]# export DESIRED_VERSION=v3.2.1; ~/_Book_k8sInfra/ch5/5.2.3/helm-install.sh
+Downloading https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz
+Verifying checksum... Done.
+Preparing to install helm into /usr/local/bin
+helm installed into /usr/local/bin/helm
+```
+![image](https://user-images.githubusercontent.com/101415950/202910936-b9e9645a-d5ed-43ac-b1d1-4fc8c0ca8bd9.png)
+
+
 ## 마크다운 언어 참조
 
 https://gist.github.com/ihoneymon/652be052a0727ad59601
