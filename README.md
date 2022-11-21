@@ -2479,6 +2479,87 @@ drwxr-xr-x. 2 1000 1000 6 Nov 21 20:44 jenkins
 ```
 ![image](https://user-images.githubusercontent.com/101415950/203045816-376c35cc-318f-4eed-8b8c-d4575153ffe5.png)
 
+- 5-1. 젠킨스는 사용자가 배포를 위해 생성한 내용과 사용자 계정 정보, 사용하는 플러그인 등 데이터를 저장하기 위해 PV와 PVC 구성이 필요
+
+- 5-2. 사전 구성된 jenkins-volume.yaml을 이용하여 PV와 PVC를 구성하고, 구성된 PV와 PVC가 Bound 상태인지 확인
+
+```
+[root@m-k8s ~]# kubectl apply -f ~/_Book_k8sInfra/ch5/5.3.1/jenkins-volume.yaml
+persistentvolume/jenkins created
+persistentvolumeclaim/jenkins created
+[root@m-k8s ~]# kubectl get pv jenkins
+NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM             STORAGECLASS   REASON   AGE
+jenkins   10Gi       RWX            Retain           Bound    default/jenkins                           17s
+[root@m-k8s ~]# kubectl get pvc jenkins
+NAME      STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+jenkins   Bound    jenkins   10Gi       RWX                           23s
+```
+![image](https://user-images.githubusercontent.com/101415950/203052173-023c5055-7db6-4cbe-af84-3ae3b29f544c.png)
+
+- 6-1. 젠킨스를 설치하는 데 필요한 인자가 많으므로 사전 구성된 jenkins-install.sh를 실행하여 젠킨스를 설치
+
+- 6-2. 실행 후 나타나는 젠킨스 릴리스에 대한 정보 확인
+
+	- NAME
+	
+		- jenkins가 설치된 릴리스 이름
+
+		- 이후 헬름 관련 명령으로 젠킨스를 조회, 삭제, 변경 등을 수행할 때 이름을 사용
+
+	- NAMESPACE
+
+		- default 젠킨스가 배포된 네임스페이스는 default 입니다.
+
+	- REVISION: 1
+
+		- 배포된 릴리스가 몇 번째로 배포된 것인지 알려줌(이 젠킨스는 처음 설치된 것임을 알 수 있음)
+
+		- helm upgrade 명령어를 사용해 젠킨스의 버전을 업그레이드할때마다 1씩 증가됨
+
+		- 업그레이드 작업 후 이전 버전으로 돌아가기 위해 helm rollback 명령어 사용 가능
+
+		- helm rollback 명령어 사용 시 REVISION 번호를 직접 지정하여 특정 리비전으로 돌아가도록 설정 가능
+
+	- NOTES
+
+		- 설치와 관련된 안내 사항을 몇 가지 표시하고 있음
+
+		- 1번 항목은 젠킨스의 관리자 비밀번호를 얻어오기 위한 명령어
+
+		- 2번은 젠킨스가 구동되는 파드에 접속할 수 있도록 외부 트래픽을 쿠버네티스의 파드로 전달하게 만드는 설정
+
+		- 외부에서 쉽게 접속하기 위해 이 실습에서는 트래픽을 전달하는 설정 대신 로드밸런서 사용
+
+		- 3번은 표시된 admin은 젠킨스 접속 시 사용할 유저 이름
+
+```
+[root@m-k8s ~]# ~/_Book_k8sInfra/ch5/5.3.1/jenkins-install.sh
+NAME: jenkins
+LAST DEPLOYED: Mon Nov 21 21:17:37 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+1. Get your 'admin' user password by running:
+  printf $(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+2. Get the Jenkins URL to visit by running these commands in the same shell:
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch the status of by running 'kubectl get svc --namespace default -w jenkins'
+  export SERVICE_IP=$(kubectl get svc --namespace default jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
+  echo http://$SERVICE_IP:80/login
+
+3. Login with the password from step 1 and the username: admin
+
+4. Use Jenkins Configuration as Code by specifying configScripts in your values.yaml file, see documentation: http:///configuration-as-code and examples: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos
+
+For more information on running Jenkins on Kubernetes, visit:
+https://cloud.google.com/solutions/jenkins-on-container-engine
+For more information about Jenkins Configuration as Code, visit:
+https://jenkins.io/projects/jcasc/
+```
+![image](https://user-images.githubusercontent.com/101415950/203052925-8f0c2464-c7dc-4aff-a965-4d335075c890.png)
+
+
 <b>호스트 디렉터리와 젠킨스 컨트롤러의 ID 관계</b>
 
 - 젠킨스 컨트롤러 설치 후에 내부의 유저 ID와 그룹 ID를 살펴보면 1000번으로 설정돼 있는 것을 확인 가능
