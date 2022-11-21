@@ -2559,6 +2559,64 @@ https://jenkins.io/projects/jcasc/
 ```
 ![image](https://user-images.githubusercontent.com/101415950/203052925-8f0c2464-c7dc-4aff-a965-4d335075c890.png)
 
+- 7-1. Deployment가 정상적으로 배포되었는지 확인
+
+```
+[root@m-k8s ~]# kubectl get deployment
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+jenkins   1/1     1            1           6m50s
+```
+![image](https://user-images.githubusercontent.com/101415950/203054894-7622041a-59af-4ec0-a775-f2caf26d426e.png)
+
+- 8-1. 배포된 젠킨스가 외부에서 접속할 수 있는 상태인지 서비스 상태 확인(192.168.1.11로 젠킨스가 외부에 노출됨)
+
+```
+[root@m-k8s ~]# kubectl get service jenkins
+NAME      TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)        AGE
+jenkins   LoadBalancer   10.109.36.244   192.168.1.11   80:30392/TCP   7m4s
+```
+![image](https://user-images.githubusercontent.com/101415950/203055136-d3924481-85f7-45cb-9a59-478dfb71abc5.png)
+
+- 9-1. 젠킨스가 마스터 노드에 있는 것을 확인(마스터에도 파드가 배포될 수 있는지 의문사항이 생김)
+
+```
+NAME                       READY   STATUS    RESTARTS   AGE     IP              NODE    NOMINATED NODE   READINESS GATES
+jenkins-76496d9db7-826gs   2/2     Running   0          7m13s   172.16.171.77   m-k8s   <none>           <none>
+```
+![image](https://user-images.githubusercontent.com/101415950/203055308-dc1a26ea-1f47-4382-adb1-9e9f798538d4.png)
+
+- 10-1. 하기 명령을 통해서 상태를 비교(nl은 number lines of files의 약자로 줄 번호를 추가하는 역할)
+
+```
+[root@m-k8s ~]# kubectl get node m-k8s -o yaml | nl
+     1  apiVersion: v1
+     2  kind: Node
+[중략]
+    14      kubernetes.io/arch: amd64
+    15      kubernetes.io/hostname: m-k8s
+    16      kubernetes.io/os: linux
+[중략]
+   164    taints:
+   165    - effect: NoSchedule
+   166      key: node-role.kubernetes.io/master
+[생략]
+[root@m-k8s ~]# kubectl get deployments jenkins -o yaml | nl
+     1  apiVersion: apps/v1
+     2  kind: Deployment
+     3  metadata:
+     4    annotations:
+     5      deployment.kubernetes.io/revision: "1"
+     6      meta.helm.sh/release-name: jenkins
+[중략]
+   562        tolerations:
+   563        - effect: NoSchedule
+   564          key: node-role.kubernetes.io/master
+   565          operator: Exists
+[생략]
+```
+![image](https://user-images.githubusercontent.com/101415950/203056207-feab872f-5076-4e86-82ff-83d458798ada.png)
+![image](https://user-images.githubusercontent.com/101415950/203056269-d77a1cc2-5ca6-44a2-b1e1-31f55eadfc00.png)
+
 
 <b>호스트 디렉터리와 젠킨스 컨트롤러의 ID 관계</b>
 
