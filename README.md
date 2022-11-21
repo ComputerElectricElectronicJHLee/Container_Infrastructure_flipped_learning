@@ -2406,6 +2406,85 @@ configmap:
 
 - 그러므로 차트 저장소를 새로 등록하지 않고 바로 애플리케이션을 설치
 
+[실습 저장소인 edu의 차트 목록]
+<img src="https://user-images.githubusercontent.com/101415950/203037493-fcc774e6-debc-4199-b4cc-08414f477a7c.png" width="80%" height="80%">
+
+- 1-1. 젠킨스로 지속적 통합을 진행하는 과정에서 컨테이너 이미지를 레지스트리에 Push하는 단계가 있음
+
+- 1-2. 이때 이미지를 저장하는 레지스트리는 앞서 '4.4.2 레지스트리 구성하기'에서 구성한 이미지 레지스트리를 사용
+
+- 1-3. 따라서 4장의 실습을 먼저 진행해야함
+
+[4장 실습]
+```
+cd ~/_Book_k8sInfra/ch4/4.3.4/
+cat Dockerfile
+docker build -t multistage-img .
+docker rmi $(docker images -f dangling=true -q)
+
+~/_Book_k8sInfra/ch4/4.4.2/create-registry.sh
+docker ps -f name=registry
+docker tag multistage-img 192.168.1.10:8443/multistage-img
+docker push 192.168.1.10:8443/multistage-img
+docker images | grep multi
+docker rmi -f (이미지 ID)
+```
+
+[레지스트리 확인]
+```
+[root@m-k8s ~]# docker ps -f name=registry
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                             NAMES
+b9470db0a54b        registry:2          "/entrypoint.sh /etc…"   16 minutes ago      Up 16 minutes       5000/tcp, 0.0.0.0:8443->443/tcp   registry
+```
+![image](https://user-images.githubusercontent.com/101415950/203043075-84edfcbf-f956-421d-9524-73b2701aef2e.png)
+
+- 2-1. 헬름으로 설치되는 젠킨스는 파드에서 동작하는 애플리케이션이므로 PV를 마운트하지않으면 파트가 다시 시작될 때   
+       내부 볼륨에 저장하는 모든 데이터가 삭제됨
+
+- 2-2. 이를 방지하기 위해 에플리케이션의 PV가 NFS를 통해 프로비저닝될 수 있게 NFS 디렉터리를 /nfs_shared/jenkins에 생성
+
+- 2-3. 미리 정의된 nfs-exporter.sh jenkins를 실행(NFS용 디렉터리 생성 및 이를 NFS 서비스로 생성하는 과정이 담김)     
+       (3.4.3 PV와 PVC 참조)
+
+```
+[root@m-k8s ~]# ~/_Book_k8sInfra/ch5/5.3.1/nfs-exporter.sh jenkins
+Created symlink from /etc/systemd/system/multi-user.target.wants/nfs-server.service to /usr/lib/systemd/system/nfs-server.service.
+```
+![image](https://user-images.githubusercontent.com/101415950/203044833-a05beb08-e889-4445-a591-65cf0146d393.png)
+
+- 3-1. 만들어진 디렉터리에 부여된 사용자 ID(uid)와 그룹 ID(gid)의 번호를 -n 옵션으로 확인
+
+- 3-2. 0번은 root 사용자에 속해있다는 의미
+
+```
+[root@m-k8s ~]# ls -n /nfs_shared
+total 0
+drwxr-xr-x. 2 0 0 6 Nov 21 20:44 jenkins
+```
+![image](https://user-images.githubusercontent.com/101415950/203045034-aa6bcdb4-bec1-44ee-abf9-fc002fc7fc7f.png)
+
+- 4-1. 젠킨스를 헬름 차트로 설치해 애플리케이션을 사용하게 되면 젠킨스의 여러 설정 파일과 구성파일들이 PVC를 통해 PV에 파일로 저장
+
+- 4-2. 이때 PV에 적절한 접근 ID를 부여하지 않으면 PVC를 사용해 파일을 읽고 쓰는 기능에 문제가 발생할 수 있음
+
+- 4-3. 이를 방지하기 위해 하기 명령어로 젠킨스 PV가 사용한 NFS 디렉터리에 대한 접근ID(uid, gid)를 1000번으로 설정
+
+- 4-4. 1000번으로 설정한 이유는 젠킨스 컨트롤러 이미지에서 기본적으로 사용하는 uid와 gid가 1000번이기 때문
+
+```
+[root@m-k8s ~]# chown 1000:1000 /nfs_shared/jenkins/
+[root@m-k8s ~]# ls -n /nfs_shared
+total 0
+drwxr-xr-x. 2 1000 1000 6 Nov 21 20:44 jenkins
+```
+![image](https://user-images.githubusercontent.com/101415950/203045816-376c35cc-318f-4eed-8b8c-d4575153ffe5.png)
+
+<b>호스트 디렉터리와 젠킨스 컨트롤러의 ID 관계</b>
+
+- 젠킨스 컨트롤러 설치 후에 내부의 유저 ID와 그룹 ID를 살펴보면 1000번으로 설정돼 있는 것을 확인 가능
+
+- 
+
 ## 마크다운 언어 참조
 
 https://gist.github.com/ihoneymon/652be052a0727ad59601
