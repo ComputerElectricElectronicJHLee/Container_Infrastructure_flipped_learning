@@ -2784,6 +2784,12 @@ helm install jenkins edu/jenkins \					#edu 차트 저장소의 jenkins 차트�
 
 ### <젠킨스 살펴보기>
 
+- 젠킨스 컨트롤러는 마스터 노드에 설치했지만 젠킨스 에이전트는 필요 시에 생성되고 작업을 마치면 삭제되는 임시적인 구조를 가짐
+
+- 따라서 젠킨스 에이전트 작업 내용들은 삭제 전 젠킨스 컨트롤러에 저장돼야 하며, 이를 위해 젠킨스 에이전트 서비스가 항상 동작하고 있음
+
+- 하기 명령을 통해 현재 젠킨스 에이전트 서비스를 확인 가능
+
 ```
 [root@m-k8s ~]# kubectl get services
 NAME            TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)        AGE
@@ -2792,6 +2798,20 @@ jenkins-agent   ClusterIP      10.100.70.201   <none>         50000/TCP      129
 kubernetes      ClusterIP      10.96.0.1       <none>         443/TCP        3d23h
 ```
 ![image](https://user-images.githubusercontent.com/101415950/203079630-51b2c1fb-6223-4cdd-aa00-a6f85a93d0cb.png)
+
+
+- 젠킨스 컨트롤러가 단독으로 설치할 경우 컨트롤러가 설치된 서버에서 젠킨스 자체 시스템 관리, CI/CD 설정,    
+  빌드 등의 작업을 모두 젠킨스 컨트롤러 단일 노드에서 수행
+
+- 하지만 컨트롤러-에이전트 구조로 설치할 경우 컨트롤러는 젠킨스 자체의 관리 및 CI/CD와 관련된 설정만을 담당하고    
+  실제 빌드 작업은 에이전트로 설정된 노드에서 이루어짐
+
+- 따라서 컨트롤러 단독 설치는 일반적으로 간단한 테스트에서만 사용되고 주로 컨트롤러-에이전트 구조로 사용(이 책에서 이 구조로 구성)
+
+[젠킨스 컨트롤러-에이전트 구조]
+<img src="https://user-images.githubusercontent.com/101415950/203081389-cdb67523-c456-461d-98f9-bc58d8a712e1.png" width="80%" height="80%">
+
+<b>[젠킨스 접속하기]<
 
 
 ## 마크다운 언어 참조
