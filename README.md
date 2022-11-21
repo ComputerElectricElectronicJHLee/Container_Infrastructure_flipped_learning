@@ -2622,7 +2622,50 @@ jenkins-76496d9db7-826gs   2/2     Running   0          7m13s   172.16.171.77   
 
 - 젠킨스 컨트롤러 설치 후에 내부의 유저 ID와 그룹 ID를 살펴보면 1000번으로 설정돼 있는 것을 확인 가능
 
-- 
+```
+[root@m-k8s ~]# kubectl exec -it jenkins-76496d9db7-826gs -- cat /etc/passwd
+Defaulting container name to jenkins.
+[중략]
+dbus:x:81:81:System message bus:/:/sbin/nologin
+jenkins:x:1000:1000::/var/jenkins_home:/bin/bash
+```
+![image](https://user-images.githubusercontent.com/101415950/203057099-d411b09c-a59b-4995-bade-eade85155c84.png)
+
+- 따라서 PV로 사용되는 NFS 디렉터리의 접근 ID를 동일하게 설정하지 않는다면 젠킨스 컨트롤러에서 이루어지는 작업들이   
+  정상적으로 수행되지 않고 'fatal: unable to look up current user in the passwd file: no such user'와 같은 에러 발생
+
+- 젠킨스 설치 시 환경변수를 설정해서 해결하는 방법이 있으나 이는 수정해야 할 것들이 많음
+
+- 현재의 랩 환경에서 가장 간단한 방법인 호스트 시스템의 ID와 젠킨스 컨트롤러 ID를 일치시켜 주는 방법으로 해결 가능
+
+<b>헬름으로 설치하는 애플리케이션 초기화하는 법</b>
+
+- 헬름을 통해 젠킨스가 잘 설치되는 경우도 있지만 시스템 및 환경에 따라서 Ready 값이 '0/1'에서 멈춰 있는 경우도 있음
+
+- 이 경우에는 kubectl get pods 명령으로 상태를 추가 확인하고 확인 결과가 init:0/1 상태(초기화 컨테이너 구동 대기)인지 확인
+
+- 위 경우는 주로 젠킨스에 필요한 파일(플러그인)을 내려받는 것이 느리거나 문제가 생긴 것을 뜻함
+
+- 따라서 최대 20분 정도 대기한 후 해결되지 않는다면 하기 명령으로 내려받은 파일들을 삭제 및 초기화시킨 후 다시 젠킨스 설치
+
+- 프로메테우스와 그라파나 설치 또는 사용 중에 문제가 발생한 경우 동일하게 문제 해결 가능
+
+```
+[root@m-k8s ~]# kubectl get deployment
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+jenkins   0/1     1            1           23m
+
+[root@m-k8s ~]# kubectl get pods
+NAME                       READY   STATUS    RESTARTS   AGE
+jenkins-76496d9db7-826gs   0/2     Running   0          24m
+
+[root@m-k8s ~]# helm uninstall jenkins
+release "jenkins" uninstalled
+
+[root@m-k8s ~]# rm -rf /nfs_shared/jenkins/*
+[root@m-k8s ~]# ~/_Book_k8sInfra/ch5/5.3.1/jenkins-install.sh
+[생략]
+```
 
 ## 마크다운 언어 참조
 
