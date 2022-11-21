@@ -2949,7 +2949,7 @@ kubernetes      ClusterIP      10.96.0.1       <none>         443/TCP        3d2
 
 	- 이 메시지를 통해 사용자에게 젠킨스에 대한 소개나 간단한 안내 가능
 
-- # of executors
+- \# of executors
 
 	- 동시에 빌드를 수행할 수 있는 실행기의 개수를 설정하는 옵션
 
