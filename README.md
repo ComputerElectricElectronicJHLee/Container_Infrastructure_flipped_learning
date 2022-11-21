@@ -2685,8 +2685,8 @@ jenkins-76496d9db7-826gs   2/2     Running   0          7m13s   172.16.171.77   
 - 키와 효과를 모두 생략한 Exists 연산자만 사용 시 테인트의 키와 효과는 모든 키와 모든 효과를 의미하므로    
   Exists 연산자 하나만으로도 테인트가 설정된 모든 노드에 대해서 해당 톨러테이션을 설정된 파드를 배포 가능
 
+[테인트와 톨러레이션 조합에 따른 파드가 할당되는 조건과 안되는 경우]
 <img src="https://user-images.githubusercontent.com/101415950/203072133-18009b50-e37e-47bc-920a-c7de187fb728.png" width="80%" height="80%">
-
 
 <b>[호스트 디렉터리와 젠킨스 컨트롤러의 ID 관계]</b>
 
@@ -2736,6 +2736,33 @@ release "jenkins" uninstalled
 [root@m-k8s ~]# ~/_Book_k8sInfra/ch5/5.3.1/jenkins-install.sh
 [생략]
 ```
+
+<b>[jenkins-install.sh 내용 분석]</b>
+```
+#!/usr/bin/env bash
+jkopt1="--sessionTimeout=1440"
+jkopt2="--sessionEviction=86400"
+jvopt1="-Duser.timezone=Asia/Seoul"
+jvopt2="-Dcasc.jenkins.config=https://raw.githubusercontent.com/sysnet4admin/_Book_k8sInfra/main/ch5/5.3.1/jenkins-config.yaml"
+jvopt3="-Dhudson.model.DownloadService.noSignatureCheck=true"
+
+helm install jenkins edu/jenkins \
+--set persistence.existingClaim=jenkins \
+--set master.adminPassword=admin \
+--set master.nodeSelector."kubernetes\.io/hostname"=m-k8s \
+--set master.tolerations[0].key=node-role.kubernetes.io/master \
+--set master.tolerations[0].effect=NoSchedule \
+--set master.tolerations[0].operator=Exists \
+--set master.runAsUser=1000 \
+--set master.runAsGroup=1000 \
+--set master.tag=2.249.3-lts-centos7 \
+--set master.serviceType=LoadBalancer \
+--set master.servicePort=80 \
+--set master.jenkinsOpts="$jkopt1 $jkopt2" \
+--set master.javaOpts="$jvopt1 $jvopt2 $jvopt3"
+
+```
+
 
 ## 마크다운 언어 참조
 
