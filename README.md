@@ -2739,18 +2739,23 @@ release "jenkins" uninstalled
 
 <b>[jenkins-install.sh 내용 분석]</b>
 ```
-#!/usr/bin/env bash
-jkopt1="--sessionTimeout=1440"
-jkopt2="--sessionEviction=86400"
-jvopt1="-Duser.timezone=Asia/Seoul"
-jvopt2="-Dcasc.jenkins.config=https://raw.githubusercontent.com/sysnet4admin/_Book_k8sInfra/main/ch5/5.3.1/jenkins-config.yaml"
-jvopt3="-Dhudson.model.DownloadService.noSignatureCheck=true"
+#!/usr/bin/env bash							#기본 설정은 30분 넘게 사용하지 않으면 세션이 종료되어 불편
+jkopt1="--sessionTimeout=1440"						#세션의 유효 시간을 하루(1440분)으로 변경
+jkopt2="--sessionEviction=86400"					#세션을 정리하는 시간 하루(86400초)로 변경
+jvopt1="-Duser.timezone=Asia/Seoul"					#기본 설정은 시간대가 맞지않아 서울(Asia/Seoul) 시간대로 설정
 
-helm install jenkins edu/jenkins \
---set persistence.existingClaim=jenkins \
---set master.adminPassword=admin \
+#쿠버네티스를 위한 젠킨스 에이전트 노드 설정은 Pod Template이라는 곳을 통해 설정값을 입력
+#가상 머신인 마스터 노드가 다시 시작하게 되면, 이에 대한 설정을 초기화됨
+#따라서 설정값을 미리 입력해 둔 jenkins-config.yaml을 깃허브 저장소에서 받아오도록 설정
+jvopt2="-Dcasc.jenkins.config=https://raw.githubusercontent.com/sysnet4admin/_Book_k8sInfra/main/ch5/5.3.1/jenkins-config.yaml"
+
+jvopt3="-Dhudson.model.DownloadService.noSignatureCheck=true"		#???
+
+helm install jenkins edu/jenkins \					#edu 차트 저장소의 jenkins 차트를 사용해 jenkins 릴리스를 설치
+--set persistence.existingClaim=jenkins \				#PVC 동적 프로비저닝을 사용할 수 없는 가상 머신 기반의 환경이므로 이미 만들어 놓은 jenkins라는 이름의 PVC를 사용하도록 설정
+--set master.adminPassword=admin \					#젠킨스 접속 시 사용할 관리자 비밀번호를 admin으로 설정(설정하지 않은 경우 설치과정에서 젠킨스가 임의로 생성한 비밀번호 사용)
 --set master.nodeSelector."kubernetes\.io/hostname"=m-k8s \
---set master.tolerations[0].key=node-role.kubernetes.io/master \
+--set master.tolerations[0].key=node-role.kubernetes.io/master \	
 --set master.tolerations[0].effect=NoSchedule \
 --set master.tolerations[0].operator=Exists \
 --set master.runAsUser=1000 \
@@ -2760,7 +2765,6 @@ helm install jenkins edu/jenkins \
 --set master.servicePort=80 \
 --set master.jenkinsOpts="$jkopt1 $jkopt2" \
 --set master.javaOpts="$jvopt1 $jvopt2 $jvopt3"
-
 ```
 
 
