@@ -3014,6 +3014,9 @@ kubernetes      ClusterIP      10.96.0.1       <none>         443/TCP        3d2
 
 ### <젠킨스 플러그인 관리하기>
 
+- 젠킨스는 실행되는 모든 기능을 플러그인으로 구현하도록 설계돼 있습니다.
+
+
 ![image](https://user-images.githubusercontent.com/101415950/203090311-1fac1ad4-9581-4d0c-8f6c-2bd873d033f8.png)
 
 
