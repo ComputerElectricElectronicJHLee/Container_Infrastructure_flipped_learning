@@ -3412,7 +3412,44 @@ clusterrolebinding.rbac.authorization.k8s.io/jenkins-cluster-admin created
 	
 	- 파드 내부의 프로세스는 설정된 서비스 어카운트로서 쿠버네티스 상에 존재하는 자원에 접근을 시도할 수 있음
 	
-- 앞에서 실행했던 
+- 앞에서 실행했던 kubectl create clusterrolebinding jenkins-cluster-admin \    
+  --clusterrole=cluster-admin --serviceaccount=default:jenkins의 의미
+  
+	- kubectl create를 통해 clusterrolebinding을 jenkins-cluster-admin이라는 이름으로 만듬
+
+	- 그리고 두 가지 옵션을 주는데, 첫 번째는 clusterrole에 묶여질 역할을 cluster-admin이라는 미리 정의된 클러스터 관리자 역할
+
+	- 두 번째 옵션은 jenkins-cluster-admin이라는 클러스터 역할의 서비스 어카운트를 jenkins로 지정
+
+	- 이때 여러 가지의 서비스 어카운트가 존재할 수 있으므로 jenkins에 속해 있는 네임스페이스 default도 함께 지정
+
+	- 이를 표로 표현하면 아래와 같음
+
+![image](https://user-images.githubusercontent.com/101415950/203599697-628cd8a3-4e80-4604-a7ce-ec7ded7e0548.png)
+
+- 이렇게 적용된 내용을 확인하기 위해 clusterrolebinding에 적용된 내용을 자세히 yaml로 출력해보는 것이 필요
+
+```
+[root@m-k8s ~]# kubectl get clusterrolebindings jenkins-cluster-admin -o yaml
+[중략]
+roleRef:
+	apiGroup: rbac.authorization.k8s.io
+	kind: ClusterRole
+	name: cluster-admin
+subjects:
+	- kind: serviceAccount
+	name: jeckins
+	namespace: default
+```
+
+- 역할 기반 접근 제어 기법은 쿠버네티스 뿐만 아니라 클라우드 그리고 거의 모든 권한 제어에 표준처럼 쓰이는 기법
+
+- 이렇게 권한이 설정된 jeckins 서비스 어카운트는 다음 그림과 같이 자유롭게 kubectl을 사용해 CI/CD를 쿠버네티스 내 구현 가능
+
+![image](https://user-images.githubusercontent.com/101415950/203600899-d2e85f7b-1b41-43b2-a013-6362c3f24bef.png)
+
+
+- 이 절에서는 CI/CD를 제공하는 젠킨스 컨트롤러와 에이전트를 설정해 CI/CD 파이프라인을 실행할 수 있는 모든 준비를 마침
 
 ## 마크다운 언어 참조
 
