@@ -3317,6 +3317,103 @@ kubernetes      ClusterIP      10.96.0.1       <none>         443/TCP        3d2
 
 - 서비스 어카운트에 쿠버네티스 API 서버와의 통신 권한을 따로 적용해야 함
 
+<b>[jenkins 서비스 어카운트를 위한 권한 설정하기]</b>
+
+- 실제로 젠킨스 에이전트 파드에서 쿠버네티스 API 서버로 통신하려면 서비스 어카운트에 권한을 줘야 함
+
+- 권한을 주기 전에 우선 jenkins 서비스 어카운트가 존재하는지 kubectl get serviceaccount로 확인
+
+```
+[root@m-k8s ~]# kubectl get serviceaccount
+NAME      SECRETS   AGE
+default   1         6d
+jenkins   1         2d3h
+```
+![image](https://user-images.githubusercontent.com/101415950/203589965-0046d6b1-6ae9-4156-b7f7-3ccca1f99960.png)
+
+- 서비스 어카운트 계정인 jenkins에 쿠버네티스 클러스터에 대한 admin 권한을 부여
+
+```
+[root@m-k8s ~]# kubectl create clusterrolebinding jenkins-cluster-admin \ 
+--clusterrole=cluster-admin --serviceaccount=default:jenkins
+clusterrolebinding.rbac.authorization.k8s.io/jenkins-cluster-admin created
+```
+
+- 권한이 적용됨
+
+- jenkins 서비스 어카운트를 통해 젠킨스 에이전트 파드를 생성하거나 젠킨스 에이전트 파드 내부에서    
+  쿠버네티스의 오브젝트에 제약 없이 접근하려면 cluster-admin 역할(Role)을 부여해야 함
+  
+- 필요한 영역으로 나누어 권한을 부여하는 것이 일반적이나 효율적으로 학습하기 위해 cluster-admin 1개 권한만 부여함
+
+- 서비스 어카운트에 cluster-admin 역할을 부여하고 이를 권한이 필요한 서비스 어카운트(사용자, 그룹)인 jenkins에 묶어줌
+
+- 이런 방식을 역할 기반 접근 제어(RBAC, Role-Based Access Control)이라고 함
+
+![image](https://user-images.githubusercontent.com/101415950/203592954-9bd27984-bdfb-49f4-b9bc-a2e84860a4b9.png)
+
+- 쿠버네티스의 역할 부여 구조는 할 수 있는일(무엇을 할 수 있나?)과 할 수 있는 주체(누가 할 수 있나?)의 결합으로 이루어짐
+
+- Rule
+
+	- 역할 기반 접근 제어에서 '할 수 있는 일'과 관련된 Role, ClusterRole이 가지고 있는 자세한 행동 규칙
+	
+	- Rules는 apiGroups, resources, verbs의 속성을 가짐
+	
+	- 쿠버네티스 클러스터상에서 어떤 행동을 한다는 것을 구체적으로 살펴보면 특정 API를 통해서 어떠한 자원에 접근해   
+	  목록이나 정보를 조회하거나 자원을 생성, 삭제, 수정하는 등의 행위를 하는 것을 의미
+	  
+	- 접근할 수 있는 API의 집합은 Rules에서 apiGroups로 표현할 수 있음 
+	
+	- API 그룹에 분류된 자원 중 접근 가능한 자원을 선별하기 위해 resouurces를 사용
+
+	- 접근할 수 있는 자원이 정의됐다면 해당 자원에 대해서 할 수 있는 행동을 규정하기 위해 verbs 사용 가능
+	
+	- 이 행동의 종류는 get(정보 얻기), list(목록 조회), 자원 생성(create), 자원 갱신(update), 일부 수정(patch),    
+	  감시(watch), 삭제(delete)가 있음
+	  
+	- 만약 해당 자원의 정보 얻기 및 목록 조회만이 가능한 규칙을 설정하기 위해서는 get과 list만을 verbs에 추가해야함
+	
+- Role, ClusterRole
+
+	- '할 수 있는 일'을 대표하는 오브젝트
+	
+	- 앞에서 설명한 Rules에 적용된 규칙에 따른 동작을 할 수 있으며 적용 범위에 따라 Role과 ClusterRole로 나뉨
+	
+	- Role은 해당 Role을 가진 주체가 특정 namespace에 대해서 접근할 수 있음
+	
+	- ClusterRole은 해당 ClusterRole을 가진 주체가 쿠버네티스 클러스터 전체에 대해서 접근할 수 있도록 함
+	
+- RoleBinding, ClusterRoleBindning
+
+	- 이 오브젝트는 Role과 ClusterRole이 대표하는 '무엇을 할 수 있나?'라는 속성을 '할 수 있는 주체'를    
+	  대표하는 속성인 Subjects와 연결시켜주는 역할
+
+	- Role과 ClusterRole은 공통적으로 roleRef(할 수 있는 역할의 참조)와 subjects(수행 주체)라는 속성을 가지고 있으며   
+	  이 두 가지가 결합하여 역할 기반 접근 제어를 수행
+	  
+	- RoleBinding은 앞에서 설명한 Role과 결합하여 네임스페이스 범위의 접근 제어를 수행
+	
+	- ClusterRoleBinding은 ClusterRole과 결합해 클러스터 전체 범위의 접근 제어를 수행
+	
+- Subjects
+
+	- 역할 기반 접근 제어에서 행위를 수행하는 주체를 의미
+	
+	- Subjects는 특정 사용자 혹은 그룹, 서비스 어카운트를 속성으로 가질 수 있음
+	
+	- 사용자란 쿠버네티스에 접근을 수행하는 실제 이용자를 의미
+	
+	- 쿠버네티스 클러스터에 등록된 사용자의 목록은 kubeconfig의 users 섹션에 기록돼 있음
+	
+	- 서비스 어카운트는 파드 내부의 프로세스에 적용되는 개념
+	
+	- 파드는 네임스페이스에 존재하는 default 서비스 어카운트를 사용하거나 특정한 서비스 어카운트를 사용하도록 설정할 수 있음
+	
+	- 파드 내부의 프로세스는 설정된 서비스 어카운트로서 쿠버네티스 상에 존재하는 자원에 접근을 시도할 수 있음
+	
+- 앞에서 실행했던 
+
 ## 마크다운 언어 참조
 
 https://gist.github.com/ihoneymon/652be052a0727ad59601
